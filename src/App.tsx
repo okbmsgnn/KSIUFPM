@@ -3,11 +3,12 @@ import styled from 'styled-components';
 import { CreateTableForm } from './modules/create-table-form';
 import fs from 'fs';
 
-const tableDirectory = '/Users/flavio/folder';
-const files = fs.readdirSync(tableDirectory);
+const tableDirectory =
+  'C:\\Users\\Фокстрот\\Desktop\\desktop\\WORK\\KSIU\\FPMTables';
 
 const App = () => {
   React.useEffect(() => {
+    const files = fs.readdirSync(tableDirectory);
     for (const file of files) {
       console.log(file);
     }
