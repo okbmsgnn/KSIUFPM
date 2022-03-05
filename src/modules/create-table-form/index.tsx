@@ -1,20 +1,38 @@
-import React from "react";
-import styled from 'styled-components';
-import { NeonInput } from "../../components/neon-input";
+import React from 'react'
+import styled from 'styled-components'
+import { NeonInput } from '../../components/neon-input'
 
 const CreateTableForm = () => {
   return (
     <CreateTableForm.Background>
       <CreateTableForm.Container>
         <CreateTableForm.TitleText>Create new table</CreateTableForm.TitleText>
-          <CreateTableForm.InputContainer>
-            <NeonInput backdropColor="#444" glowColor="aqua" border={{activeColor: '#fff', defaultColor: '#777'}} placeholder='Table name' width={300}/>
 
-            <NeonInput backdropColor="#444" glowColor="aqua" border={{activeColor: '#fff', defaultColor: '#777'}} placeholder='Table description' width={300}/>
+        <CreateTableForm.InputContainer>
+          <NeonInput
+            backdropColor="#444"
+            glowColor="aqua"
+            border={{ activeColor: '#fff', defaultColor: '#777' }}
+            placeholder="Table name"
+            width={300}
+          />
 
-            <NeonInput backdropColor="#444" glowColor="aqua" border={{activeColor: '#fff', defaultColor: '#777'}} placeholder='Table tags' width={300}/>
-          </CreateTableForm.InputContainer>
-        
+          <NeonInput
+            backdropColor="#444"
+            glowColor="aqua"
+            border={{ activeColor: '#fff', defaultColor: '#777' }}
+            placeholder="Table description"
+            width={300}
+          />
+
+          <NeonInput
+            backdropColor="#444"
+            glowColor="aqua"
+            border={{ activeColor: '#fff', defaultColor: '#777' }}
+            placeholder="Table tags"
+            width={300}
+          />
+        </CreateTableForm.InputContainer>
       </CreateTableForm.Container>
     </CreateTableForm.Background>
   )
