@@ -7,41 +7,42 @@ export enum TimeView {
   Day = 'Day',
 }
 
-export enum TimeDay {
-  Monday = 'Monday',
-  Tuesday = 'Tuesday',
-  Wednesday = 'Wednesday',
-  Thursday = 'Thursday',
-  Friday = 'Friday',
-  Saturday = 'Saturday',
-  Sunday = 'Sunday',
-}
+export const TimeDay = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+];
 
-export enum TimeMonth {
-  January = 'January',
-  February = 'February',
-  March = 'March',
-  April = 'April',
-  May = 'May',
-  June = 'June',
-  July = 'July',
-  August = 'August',
-  September = 'September',
-  October = 'October',
-  November = 'November',
-  December = 'December',
-}
+export const TimeMonth = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
 
-export interface TimeData<T> {
-  cells: T[];
+export interface TimeData {
+  cells: string[];
   dates: Date[];
 }
 
 export interface CustomDatePickerState {
-  days: TimeData<TimeDay> | null;
-  months: TimeData<TimeMonth> | null;
-  years: TimeData<string> | null;
+  dates: TimeData | null;
   view: TimeView;
+  selectedDate: Date | null;
+  initialDate: Date;
+  pageOffset: number;
 }
 
 export type CustomDatePickerAction = InferActionCreatorsTypes<

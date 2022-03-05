@@ -1,5 +1,5 @@
-const { app, BrowserWindow } = require('electron')
-const path = require('path')
+const { app, BrowserWindow } = require('electron');
+const path = require('path');
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -9,13 +9,13 @@ const createWindow = () => {
     fullscreen: false,
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: false,
     },
     minWidth: 1280,
-    minHeight: 720
-  })
+    minHeight: 720,
+  });
 
-  win.loadURL('http://localhost:3000')
+  win.loadURL('http://localhost:3000');
 
   // Temporary disabled
   // if(process.env.NODE_ENV === 'development') {
@@ -23,9 +23,9 @@ const createWindow = () => {
   // } else {
   //   win.loadURL(`file://${path.join(__dirname, '../build/index.html')}`)
   // }
-  
-  return win
-}
+
+  return win;
+};
 
 app.whenReady().then(createWindow);
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { CustomDatePicker } from '../../components/custom-date-picker';
 import { NeonInput } from '../../components/neon-input';
 
 const CreateTableForm = () => {
@@ -33,6 +34,18 @@ const CreateTableForm = () => {
             width={300}
           />
         </CreateTableForm.InputContainer>
+
+        <CustomDatePicker>
+          {(props) => (
+            <div onClick={() => props.moveToNextPage()}>
+              {props.dates?.dates.map((d, idx) => (
+                <div key={d.toDateString() + '_' + idx}>
+                  {d.toDateString()} {props.dates?.cells[idx]}
+                </div>
+              ))}
+            </div>
+          )}
+        </CustomDatePicker>
       </CreateTableForm.Container>
     </CreateTableForm.Background>
   );
