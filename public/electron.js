@@ -3,7 +3,6 @@ const path = require('path')
 
 const createWindow = () => {
   const win = new BrowserWindow({
-    title: 'FPM 2020',
     center: true,
     darkTheme: true,
     autoHideMenuBar: true,
@@ -12,13 +11,18 @@ const createWindow = () => {
       nodeIntegration: true,
       contextIsolation: false
     },
+    minWidth: 1280,
+    minHeight: 720
   })
 
-  if(process.env.NODE_ENV === 'development') {
-    win.loadURL('http://localhost:3000')
-  } else {
-    win.loadURL(`file://${path.join(__dirname, '../build/index.html')}`)
-  }
+  win.loadURL('http://localhost:3000')
+
+  // Temporary disabled
+  // if(process.env.NODE_ENV === 'development') {
+  //   win.loadURL('http://localhost:3000')
+  // } else {
+  //   win.loadURL(`file://${path.join(__dirname, '../build/index.html')}`)
+  // }
   
   return win
 }
