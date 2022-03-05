@@ -6,7 +6,7 @@ const App = () => {
 
   return (
     <App.Container>
-
+      asdaasdsasdasda
       <CreateTableForm />
 
     </App.Container>
@@ -14,7 +14,7 @@ const App = () => {
 }
 
 App.Container = styled.div`
-  background: #131313;
+  background: #eeffff;
   width: 100%;
   height: 100%;
 `

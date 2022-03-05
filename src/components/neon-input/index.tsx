@@ -8,12 +8,16 @@ interface NeonInputProps {
   };
   glowColor?: string;
   backdropColor?: string;
+  placeholder?: string;
+  width?: number;
 }
 
 const NeonInput = ({
   border = {activeColor: '#fff', defaultColor: '#444'},
   backdropColor = '#fff',
   glowColor = '#fff',
+  placeholder = '',
+  width,
   ...props
 }: NeonInputProps) => {
   const [isActive, setIsActive] = React.useState(false)
@@ -21,15 +25,17 @@ const NeonInput = ({
   const inputRef = React.useRef<HTMLInputElement | null>(null)
 
   return <NeonInput.Container {...props}>
+    <NeonInput.Glow color={glowColor} isActive={isActive} />
+    <NeonInput.Backdrop color={backdropColor} isActive={isActive}/>
     <NeonInput.Input 
       onFocus={() => setIsActive(true)}
       onBlur={() => setIsActive(false)}
       ref={inputRef}
       borderColor={isActive ? border.activeColor : border.defaultColor}
+      placeholder={placeholder}
+      width={width}
     />
 
-    <NeonInput.Glow color={glowColor} isActive={isActive} />
-    <NeonInput.Backdrop color={backdropColor} isActive={isActive}/>
   </NeonInput.Container>
 }
 
@@ -44,13 +50,16 @@ NeonInput.Container = styled.div`
 
 NeonInput.Input = styled.input<InputProps>`
   background: transparent;
+  position: relative;
   display: block;
   outline: none;
   border: 0;
+  z-index: 2;
+  width: ${({width}) => width}px;
 
   border-bottom: 2px solid ${({borderColor}) => borderColor};
   color: #ffffff;
-  padding: 4px 2px;
+  padding: 4px 0px;
   transition: border-bottom-color 0.5s;
 `
 
@@ -60,7 +69,7 @@ NeonInput.Backdrop = styled.div<{color: string; isActive: boolean;}>`
   position: absolute;
   top: 0;
   left: 0;
-  z-index: -1;
+  z-index: 0;
 
   background: radial-gradient(ellipse at 0% 100%, ${({color}) => color}, transparent 70%);;
   opacity: ${({isActive}) => isActive ? 1 : 0};
@@ -74,7 +83,7 @@ NeonInput.Glow = styled.div<{color: string; isActive: boolean;}>`
   position: absolute;
   bottom: -1.5px;
   left: 0;
-  z-index: -1;
+  z-index: 0;
 
   transform: translateY(100%);
 
