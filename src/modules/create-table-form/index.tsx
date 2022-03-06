@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { CustomDatePicker } from '../../components/custom-date-picker';
 import { NeonDatePicker } from '../../components/neon-date-picker';
 import { NeonInput } from '../../components/neon-input';
 

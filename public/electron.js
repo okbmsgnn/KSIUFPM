@@ -1,6 +1,8 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 
+const env = process.env.NODE_ENV || 'development';
+
 const createWindow = () => {
   const win = new BrowserWindow({
     center: true,
@@ -15,14 +17,13 @@ const createWindow = () => {
     minHeight: 720,
   });
 
-  win.loadURL('http://localhost:3000');
-
-  // Temporary disabled
-  // if(process.env.NODE_ENV === 'development') {
-  //   win.loadURL('http://localhost:3000')
-  // } else {
-  //   win.loadURL(`file://${path.join(__dirname, '../build/index.html')}`)
-  // }
+  if (env === 'development') {
+    win.loadURL('http://localhost:3000');
+  } else {
+    win.loadURL(
+      `file://${path.join(__dirname, '../build/index.html')}`
+    );
+  }
 
   return win;
 };
@@ -40,3 +41,14 @@ app.on('activate', () => {
     createWindow();
   }
 });
+
+if (env === 'development') {
+  try {
+    require('electron-reloader')(module, {
+      debug: true,
+      watchRenderer: true,
+    });
+  } catch (_) {
+    console.log('Error');
+  }
+}

@@ -26,6 +26,9 @@
     "@types/d3-time-format": "^4.0.0",
     "@types/styled-components": "^5.1.24",
     "concurrently": "^7.0.0",
+    "cross-env": "^7.0.3",
+    "electron-reload": "^2.0.0-alpha.1",
+    "electron-reloader": "^1.2.3",
     "nodemon": "^2.0.15",
     "prettier": "^2.5.1",
     "react-app-rewired": "^2.2.1",
@@ -35,9 +38,9 @@
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "eject": "react-app-rewired eject",
-    "start:artur": "concurrently -k \"npm start\" \"npm run electron\"",
-    "start:oleg": "concurrently -k \"yarn start\" \"yarn run electron\"",
-    "electron": "wait-on tcp:3000 && electron ."
+    "start:artur": "concurrently -k \"cross-env BROWSER=none npm start\" \"npm run electron\"",
+    "start:oleg": "concurrently -k \"cross-env BROWSER=none yarn start\" \"yarn run start:electron\"",
+    "start:electron": "wait-on tcp:3000 && electron ."
   },
   "eslintConfig": {
     "extends": [
