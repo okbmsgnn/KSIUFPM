@@ -11,6 +11,8 @@
     "@types/node": "^16.7.13",
     "@types/react": "^17.0.20",
     "@types/react-dom": "^17.0.9",
+    "d3-time": "^3.0.0",
+    "d3-time-format": "^4.1.0",
     "electron": "^17.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -20,17 +22,19 @@
     "web-vitals": "^2.1.0"
   },
   "devDependencies": {
+    "@types/d3-time": "^3.0.0",
+    "@types/d3-time-format": "^4.0.0",
     "@types/styled-components": "^5.1.24",
     "concurrently": "^7.0.0",
     "nodemon": "^2.0.15",
     "prettier": "^2.5.1",
+    "react-app-rewired": "^2.2.1",
     "wait-on": "^6.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "eject": "react-app-rewired eject",
     "start:artur": "concurrently -k \"npm start\" \"npm run electron\"",
     "start:oleg": "concurrently -k \"yarn start\" \"yarn run electron\"",
     "electron": "wait-on tcp:3000 && electron ."

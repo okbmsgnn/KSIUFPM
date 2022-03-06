@@ -1,16 +1,23 @@
 import React from 'react';
-import { SET_VIEW } from './actions';
+import {
+  SET_ITEMS,
+  SET_PAGE_OFFSET,
+  SET_SELECTED_DATE,
+  SET_VIEW,
+} from './actions';
 import {
   CustomDatePickerAction,
   CustomDatePickerState,
+  TimeData,
   TimeView,
 } from './model';
 
 export const initialState: CustomDatePickerState = {
-  days: null,
-  months: null,
-  years: null,
+  items: { legends: [], dates: [] },
   view: TimeView.Day,
+  selectedDate: null,
+  initialDate: new Date(),
+  pageOffset: 0,
 };
 
 export const customDatePickerReducer: React.Reducer<
@@ -19,7 +26,28 @@ export const customDatePickerReducer: React.Reducer<
 > = (state, action) => {
   switch (action.type) {
     case SET_VIEW: {
-      return { ...state, view: action.payload };
+      return {
+        ...state,
+        view: action.payload as TimeView,
+      };
+    }
+    case SET_ITEMS: {
+      return {
+        ...state,
+        items: action.payload as TimeData,
+      };
+    }
+    case SET_SELECTED_DATE: {
+      return {
+        ...state,
+        selectedDate: action.payload as Date,
+      };
+    }
+    case SET_PAGE_OFFSET: {
+      return {
+        ...state,
+        pageOffset: action.payload as number,
+      };
     }
     default:
       return state;
