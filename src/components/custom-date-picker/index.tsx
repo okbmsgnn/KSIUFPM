@@ -75,7 +75,7 @@ export const CustomDatePicker = ({
   }, []);
 
   const moveToNextPage = React.useCallback(() => {
-    dispatch(actions.setPageOffset(state.pageOffset - 1));
+    dispatch(actions.setPageOffset(state.pageOffset + 1));
   }, [state.pageOffset]);
 
   const moveToPrevPage = React.useCallback(() => {
@@ -110,7 +110,8 @@ export const CustomDatePicker = ({
       const days = generateDays(
         utcMonth.offset(state.initialDate, state.pageOffset)
       );
-      const daysBefore = days[0].getDay() - 1;
+      const daysBefore =
+        days[0].getUTCDay() === 0 ? 6 : days[0].getUTCDay() - 1;
       const daysAfter = 42 - daysBefore - days.length;
 
       if (daysBefore !== 0) {

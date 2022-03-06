@@ -11,7 +11,12 @@ export const NeonDatePicker = () => {
   const renderPicker = React.useCallback(
     (props: CustomDatePickerChildrenProps) => {
       if (props.view === TimeView.Day) {
-        return <DaysPicker {...props} />;
+        return (
+          <DaysPicker
+            {...props}
+            cellSize={{ height: 45, width: 45 }}
+          />
+        );
       }
 
       return null;
@@ -29,8 +34,6 @@ export const NeonDatePicker = () => {
 };
 
 NeonDatePicker.Container = styled.div`
-  width: calc(40px * 7);
-  height: calc(40px * 6);
   background: #fff;
-  padding: 10px;
+  display: inline-block;
 `;
