@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  SET_DATES,
+  SET_ITEMS,
   SET_PAGE_OFFSET,
   SET_SELECTED_DATE,
   SET_VIEW,
@@ -13,7 +13,7 @@ import {
 } from './model';
 
 export const initialState: CustomDatePickerState = {
-  dates: null,
+  items: { legends: [], dates: [] },
   view: TimeView.Day,
   selectedDate: null,
   initialDate: new Date(),
@@ -26,12 +26,15 @@ export const customDatePickerReducer: React.Reducer<
 > = (state, action) => {
   switch (action.type) {
     case SET_VIEW: {
-      return { ...initialState, view: action.payload as TimeView };
-    }
-    case SET_DATES: {
       return {
-        ...initialState,
-        dates: action.payload as TimeData,
+        ...state,
+        view: action.payload as TimeView,
+      };
+    }
+    case SET_ITEMS: {
+      return {
+        ...state,
+        items: action.payload as TimeData,
       };
     }
     case SET_SELECTED_DATE: {

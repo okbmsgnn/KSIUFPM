@@ -33,12 +33,12 @@ export const TimeMonth = [
 ];
 
 export interface TimeData {
-  cells: string[];
+  legends: string[];
   dates: Date[];
 }
 
 export interface CustomDatePickerState {
-  dates: TimeData | null;
+  items: TimeData;
   view: TimeView;
   selectedDate: Date | null;
   initialDate: Date;

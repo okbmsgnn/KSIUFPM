@@ -1,19 +1,25 @@
 import React from 'react';
 import styled from 'styled-components';
 import { CustomDatePicker } from '../../components/custom-date-picker';
+import { NeonDatePicker } from '../../components/neon-date-picker';
 import { NeonInput } from '../../components/neon-input';
 
 const CreateTableForm = () => {
   return (
     <CreateTableForm.Background>
       <CreateTableForm.Container>
-        <CreateTableForm.TitleText>Create new table</CreateTableForm.TitleText>
+        <CreateTableForm.TitleText>
+          Create new table
+        </CreateTableForm.TitleText>
 
         <CreateTableForm.InputContainer>
           <NeonInput
             backdropColor="#444"
             glowColor="aqua"
-            border={{ activeColor: '#fff', defaultColor: '#777' }}
+            border={{
+              activeColor: '#fff',
+              defaultColor: '#777',
+            }}
             placeholder="Table name"
             width={300}
           />
@@ -21,7 +27,10 @@ const CreateTableForm = () => {
           <NeonInput
             backdropColor="#444"
             glowColor="aqua"
-            border={{ activeColor: '#fff', defaultColor: '#777' }}
+            border={{
+              activeColor: '#fff',
+              defaultColor: '#777',
+            }}
             placeholder="Table description"
             width={300}
           />
@@ -29,23 +38,16 @@ const CreateTableForm = () => {
           <NeonInput
             backdropColor="#444"
             glowColor="aqua"
-            border={{ activeColor: '#fff', defaultColor: '#777' }}
+            border={{
+              activeColor: '#fff',
+              defaultColor: '#777',
+            }}
             placeholder="Table tags"
             width={300}
           />
         </CreateTableForm.InputContainer>
 
-        <CustomDatePicker>
-          {(props) => (
-            <div onClick={() => props.moveToNextPage()}>
-              {props.dates?.dates.map((d, idx) => (
-                <div key={d.toDateString() + '_' + idx}>
-                  {d.toDateString()} {props.dates?.cells[idx]}
-                </div>
-              ))}
-            </div>
-          )}
-        </CustomDatePicker>
+        <NeonDatePicker />
       </CreateTableForm.Container>
     </CreateTableForm.Background>
   );
