@@ -2,6 +2,9 @@ import { utcDay } from 'd3-time';
 import { timeFormat } from 'd3-time-format';
 import React from 'react';
 import styled from 'styled-components';
+import { useClickOutside } from '../../hooks/useClickOutside';
+import { useComponentSize } from '../../hooks/useComponentSize';
+import { measureText } from '../../utils/text';
 import { CustomDatePickerChildrenProps } from '../custom-date-picker';
 
 interface DaysPickerProps extends CustomDatePickerChildrenProps {
@@ -9,9 +12,17 @@ interface DaysPickerProps extends CustomDatePickerChildrenProps {
     width: number;
     height: number;
   };
+  pickerPosition?: {
+    x: number;
+    y: number;
+  };
+  closeOnClickOutside?: boolean;
+  onRequestClose?: () => void;
+  onDateSelect?: (date: Date) => void;
 }
 
 const formatTitleDate = timeFormat('%B, %Y');
+const LEGEND = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 
 export const DaysPicker = ({
   items,
@@ -21,8 +32,44 @@ export const DaysPicker = ({
   resetSelection,
   moveToNextPage,
   moveToPrevPage,
-  cellSize,
+  cellSize = {
+    width: 40,
+    height: 40,
+  },
+  pickerPosition = {
+    x: 0,
+    y: 0,
+  },
+  closeOnClickOutside = true,
+  onRequestClose,
+  onDateSelect,
 }: DaysPickerProps) => {
+  const [position, setPosition] = React.useState(pickerPosition);
+  const [mousePivot, setMousePivot] = React.useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
+  const containerSize = useComponentSize(containerRef.current);
+
+  const baseFontSize = React.useMemo(
+    () => cellSize.width / 2.5,
+    [cellSize]
+  );
+
+  const dateIndicatorOffset = React.useMemo(
+    () =>
+      (cellSize.width -
+        measureText({
+          text: LEGEND[0],
+          name: 'Segoe UI',
+          size: baseFontSize * 0.75,
+        })) /
+      2,
+    [baseFontSize]
+  );
+
   const isDaySelected = React.useCallback(
     (date: Date) => {
       return selectedDate
@@ -56,10 +103,74 @@ export const DaysPicker = ({
     [selectDate, resetSelection, selectedDate]
   );
 
+  const onMouseMove = React.useCallback(
+    (e) => {
+      if (!mousePivot || !containerSize) return;
+
+      let newX = e.pageX - mousePivot.x;
+      let newY = e.pageY - mousePivot.y;
+
+      if (newX < 0) newX = 0;
+      if (newY < 0) newY = 0;
+      if (newX > window.innerWidth - containerSize.width)
+        newX = window.innerWidth - containerSize.width;
+      if (newY > window.innerHeight - containerSize.height)
+        newY = window.innerHeight - containerSize.height;
+
+      setPosition({
+        x: newX,
+        y: newY,
+      });
+    },
+    [mousePivot, containerSize?.width, containerSize?.height]
+  );
+
+  const onDragStart = React.useCallback((e) => {
+    if (e.target.classList.contains('arrow')) return;
+
+    setMousePivot({
+      x: e.nativeEvent.layerX,
+      y: e.nativeEvent.layerY,
+    });
+  }, []);
+
+  const onDragEnd = React.useCallback(() => {
+    setMousePivot(null);
+  }, []);
+
+  React.useEffect(() => {
+    if (!mousePivot) return;
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onDragEnd);
+
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onDragEnd);
+    };
+  }, [mousePivot, onMouseMove, onDragEnd]);
+
+  const onClickOutside = React.useCallback(() => {
+    if (!closeOnClickOutside) return;
+
+    onRequestClose?.call(null);
+  }, [closeOnClickOutside, onRequestClose]);
+
+  useClickOutside(containerRef, onClickOutside, 'mousedown');
+
   return (
-    <DaysPicker.Container width={cellSize?.width}>
-      <DaysPicker.TopBar>
-        <DaysPicker.DateIndicator>
+    <DaysPicker.Container
+      ref={containerRef}
+      width={cellSize.width}
+      baseFontSize={baseFontSize}
+      style={{
+        top: position.y,
+        left: position.x,
+      }}
+      className="slight-shadow"
+    >
+      <DaysPicker.TopBar onMouseDown={onDragStart}>
+        <DaysPicker.DateIndicator offset={dateIndicatorOffset}>
           {formatTitleDate(viewDate)}
         </DaysPicker.DateIndicator>
 
@@ -67,7 +178,8 @@ export const DaysPicker = ({
           <DaysPicker.Arrow
             up={true}
             onClick={moveToPrevPage}
-            dayWidth={cellSize?.width}
+            className="arrow"
+            dayWidth={cellSize.width}
           >
             ❯
           </DaysPicker.Arrow>
@@ -75,14 +187,21 @@ export const DaysPicker = ({
           <DaysPicker.Arrow
             up={false}
             onClick={moveToNextPage}
-            dayWidth={cellSize?.width}
+            className="arrow"
+            dayWidth={cellSize.width}
           >
             ❯
           </DaysPicker.Arrow>
         </DaysPicker.Controls>
       </DaysPicker.TopBar>
 
-      <DaysPicker.DaysContainer height={cellSize?.height}>
+      <DaysPicker.Legend>
+        {LEGEND.map((l) => (
+          <div key={l}>{l}</div>
+        ))}
+      </DaysPicker.Legend>
+
+      <DaysPicker.DaysContainer height={cellSize.height}>
         {rows.map((row, idx) => (
           <DaysPicker.DayRow key={idx}>
             {row.map((day) => (
@@ -104,54 +223,78 @@ export const DaysPicker = ({
 };
 
 DaysPicker.Container = styled.div<{
-  width?: number;
+  width: number;
+  baseFontSize: number;
 }>`
-  width: ${({ width }) =>
-    width ? `calc(${width}px * 7 + 12px)` : '292px'};
-  padding: 10px;
+  position: absolute;
+  background: #33455c85;
+  width: ${({ width }) => `calc(${width}px * 7 + 12px + 20px)`};
 
-  color: #232323;
+  font-size: ${({ baseFontSize }) => baseFontSize}px;
+
+  border: 1px solid #777;
 `;
 
 DaysPicker.TopBar = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+
+  background: #232323;
+  color: #fff;
+
+  padding: 10px;
+  cursor: move;
 `;
 
-DaysPicker.DateIndicator = styled.div`
-  border-bottom: 2px solid #232323;
+DaysPicker.Legend = styled.div`
+  padding: 4px 10px;
+
+  display: grid;
+  grid-template: 1fr / repeat(7, 1fr);
+  align-items: center;
+  font-size: 0.75em;
+  margin: 6px 0;
+  color: #ffffff;
+
+  > * {
+    text-align: center;
+  }
+`;
+
+DaysPicker.DateIndicator = styled.div<{ offset: number }>`
+  margin-left: ${({ offset }) => offset}px;
+  font-size: 0.9em;
 `;
 
 DaysPicker.Controls = styled.div`
   display: flex;
   align-items: center;
   gap: 2px;
+  font-size: 1.4em;
 `;
 
-DaysPicker.Arrow = styled.div<{ up: boolean; dayWidth?: number }>`
+DaysPicker.Arrow = styled.div<{ up: boolean; dayWidth: number }>`
   display: flex;
   justify-content: center;
-  font-size: 30px;
-  line-height: 30px;
-  width: ${({ dayWidth }) => dayWidth ?? 40}px;
+  line-height: 1em;
+  width: ${({ dayWidth }) => dayWidth}px;
   transform: scaleY(${({ up }) => (up ? -1 : 1)}) rotate(90deg);
   cursor: pointer;
 
   :hover {
-    color: #777;
+    color: #c1c1c1;
   }
 `;
 
-DaysPicker.DaysContainer = styled.div<{ height?: number }>`
-  color: #000;
-  height: ${({ height }) =>
-    height ? `calc(${height}px * 6 + 10px)` : '250px'};
+DaysPicker.DaysContainer = styled.div<{ height: number }>`
+  color: #ffffff;
+  height: ${({ height }) => `calc(${height}px * 6 + 10px)`};
 
   display: grid;
   grid-template: repeat(6, 1fr) / 1fr;
   gap: 2px;
+  padding: 0 10px 10px 10px;
 
   .selected {
     background: #232323;
@@ -159,10 +302,10 @@ DaysPicker.DaysContainer = styled.div<{ height?: number }>`
   }
 
   .other {
-    color: #cacaca;
+    color: #6a6a6a;
   }
 
-  font-size: 16px;
+  font-size: 0.75em;
 `;
 
 DaysPicker.DayRow = styled.div`
@@ -172,7 +315,6 @@ DaysPicker.DayRow = styled.div`
 `;
 
 DaysPicker.Day = styled.div`
-  background: #ffffff;
   border: 2px solid transparent;
 
   display: flex;

@@ -2,11 +2,15 @@ import React from 'react';
 import styled from 'styled-components';
 import { NeonDatePicker } from '../../components/neon-date-picker';
 import { NeonInput } from '../../components/neon-input';
+import { Portal } from '../../components/portal';
 
 const CreateTableForm = () => {
+  const [isDatePickerOpen, setIsDatePickerOpen] =
+    React.useState(true);
+
   return (
     <CreateTableForm.Background>
-      <CreateTableForm.Container>
+      <CreateTableForm.Container className="slight-shadow">
         <CreateTableForm.TitleText>
           Create new table
         </CreateTableForm.TitleText>
@@ -43,10 +47,17 @@ const CreateTableForm = () => {
             }}
             placeholder="Table tags"
             width={300}
+            onClick={() => setIsDatePickerOpen(true)}
           />
         </CreateTableForm.InputContainer>
 
-        <NeonDatePicker />
+        {isDatePickerOpen && (
+          <Portal>
+            <NeonDatePicker
+              onRequestClose={() => setIsDatePickerOpen(false)}
+            />
+          </Portal>
+        )}
       </CreateTableForm.Container>
     </CreateTableForm.Background>
   );
@@ -70,8 +81,6 @@ CreateTableForm.Container = styled.div`
   color: #ffffff;
   width: 800px;
   height: 500px;
-
-  box-shadow: 7px 7px 25px 7px #0005;
 `;
 
 CreateTableForm.Background = styled.div`
