@@ -4,6 +4,7 @@ import { ColorPicker } from '../../components/color-picker';
 import { NeonDatePicker } from '../../components/neon-date-picker';
 import { NeonInput } from '../../components/neon-input';
 import { Portal } from '../../components/portal';
+import { Switch } from '../../components/switch';
 
 const CreateTableForm = () => {
   const [isDatePickerOpen, setIsDatePickerOpen] =
@@ -66,6 +67,8 @@ const CreateTableForm = () => {
         )}
 
         <ColorPicker size={20} defaultColor="#0af" />
+
+        <Switch size={152} disabled={false} type="rounded" />
       </CreateTableForm.Container>
     </CreateTableForm.Background>
   );
