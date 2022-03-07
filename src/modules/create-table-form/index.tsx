@@ -1,12 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
+import { ColorPicker } from '../../components/color-picker';
 import { NeonDatePicker } from '../../components/neon-date-picker';
 import { NeonInput } from '../../components/neon-input';
 import { Portal } from '../../components/portal';
 
 const CreateTableForm = () => {
   const [isDatePickerOpen, setIsDatePickerOpen] =
-    React.useState(true);
+    React.useState(false);
 
   const [selectedDate, setSelectedDate] = React.useState<Date | null>(
     null
@@ -51,7 +52,7 @@ const CreateTableForm = () => {
             }}
             placeholder={selectedDate?.toISOString()}
             width={300}
-            onClick={() => setIsDatePickerOpen(true)}
+            onMouseDown={() => setIsDatePickerOpen(true)}
           />
         </CreateTableForm.InputContainer>
 
@@ -63,6 +64,8 @@ const CreateTableForm = () => {
             />
           </Portal>
         )}
+
+        <ColorPicker size={20} defaultColor="#0af" />
       </CreateTableForm.Container>
     </CreateTableForm.Background>
   );
