@@ -64,8 +64,12 @@ const CreateTableForm = () => {
             />
           </Portal>
         )}
-
-        <ColorPicker size={20} defaultColor="#0af" />
+        <CreateTableForm.PickerContainer>
+          <ColorPicker size={20} defaultColor="#0af" />
+          <ColorPicker size={20} defaultColor="#0af" />
+          <ColorPicker size={20} defaultColor="#0af" />
+          <ColorPicker size={20} defaultColor="#0af" />
+        </CreateTableForm.PickerContainer>
       </CreateTableForm.Container>
     </CreateTableForm.Background>
   );
@@ -82,6 +86,22 @@ CreateTableForm.InputContainer = styled.div`
   align-items: flex-start;
   margin: 20px 0 0 20px;
   gap: 20px;
+`;
+
+CreateTableForm.PickerContainer = styled.div`
+  padding: 15px 15px 15px 15px;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  left: 130px;
+  width: max-content;
+  font-size: 15px;
+
+  align-items: flex-start;
+  margin: 20px 0 0 20px;
+  gap: 15px;
+
+  background: #191919;
 `;
 
 CreateTableForm.Container = styled.div`

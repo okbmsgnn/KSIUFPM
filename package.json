@@ -38,7 +38,7 @@
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "eject": "react-app-rewired eject",
-    "start:artur": "concurrently -k \"cross-env BROWSER=none npm start\" \"npm run electron\"",
+    "start:artur": "concurrently -k \"cross-env BROWSER=none npm start\" \"npm run start:electron\"",
     "start:oleg": "concurrently -k \"cross-env BROWSER=none yarn start\" \"yarn run start:electron\"",
     "start:electron": "wait-on tcp:3000 && electron ."
   },
