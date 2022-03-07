@@ -8,6 +8,10 @@ const CreateTableForm = () => {
   const [isDatePickerOpen, setIsDatePickerOpen] =
     React.useState(true);
 
+  const [selectedDate, setSelectedDate] = React.useState<Date | null>(
+    null
+  );
+
   return (
     <CreateTableForm.Background>
       <CreateTableForm.Container className="slight-shadow">
@@ -45,7 +49,7 @@ const CreateTableForm = () => {
               activeColor: '#fff',
               defaultColor: '#777',
             }}
-            placeholder="Table tags"
+            placeholder={selectedDate?.toISOString()}
             width={300}
             onClick={() => setIsDatePickerOpen(true)}
           />
@@ -55,6 +59,7 @@ const CreateTableForm = () => {
           <Portal>
             <NeonDatePicker
               onRequestClose={() => setIsDatePickerOpen(false)}
+              onDateSelect={(date) => setSelectedDate(date)}
             />
           </Portal>
         )}

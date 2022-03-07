@@ -9,10 +9,12 @@ import { DaysPicker } from './DaysPicker';
 
 interface NeonDatePickerProps {
   onRequestClose: () => void;
+  onDateSelect: (date: Date | null) => void;
 }
 
 export const NeonDatePicker = ({
   onRequestClose,
+  onDateSelect,
 }: NeonDatePickerProps) => {
   const renderPicker = React.useCallback(
     (props: CustomDatePickerChildrenProps) => {
@@ -21,8 +23,10 @@ export const NeonDatePicker = ({
           <DaysPicker
             {...props}
             cellSize={{ height: 40, width: 45 }}
+            pickerPosition={{ x: 200, y: 300 }}
             closeOnClickOutside
             onRequestClose={onRequestClose}
+            onDateSelect={onDateSelect}
           />
         );
       }

@@ -18,7 +18,7 @@ interface DaysPickerProps extends CustomDatePickerChildrenProps {
   };
   closeOnClickOutside?: boolean;
   onRequestClose?: () => void;
-  onDateSelect?: (date: Date) => void;
+  onDateSelect?: (date: Date | null) => void;
 }
 
 const formatTitleDate = timeFormat('%B, %Y');
@@ -50,6 +50,7 @@ export const DaysPicker = ({
     y: number;
   } | null>(null);
 
+  const selectedDateRef = React.useRef(selectedDate);
   const containerRef = React.useRef<HTMLDivElement | null>(null);
   const containerSize = useComponentSize(containerRef.current);
 
@@ -97,8 +98,11 @@ export const DaysPicker = ({
 
   const onDayClick = React.useCallback(
     (day: Date) => {
-      if (day.getTime() !== selectedDate?.getTime()) selectDate(day);
-      else resetSelection();
+      if (day.getTime() !== selectedDate?.getTime()) {
+        selectDate(day);
+      } else {
+        resetSelection();
+      }
     },
     [selectDate, resetSelection, selectedDate]
   );
@@ -138,6 +142,14 @@ export const DaysPicker = ({
     setMousePivot(null);
   }, []);
 
+  const onClickOutside = React.useCallback(() => {
+    if (!closeOnClickOutside) return;
+
+    onRequestClose?.call(null);
+  }, [closeOnClickOutside, onRequestClose]);
+
+  useClickOutside(containerRef, onClickOutside, 'mousedown');
+
   React.useEffect(() => {
     if (!mousePivot) return;
 
@@ -150,13 +162,15 @@ export const DaysPicker = ({
     };
   }, [mousePivot, onMouseMove, onDragEnd]);
 
-  const onClickOutside = React.useCallback(() => {
-    if (!closeOnClickOutside) return;
+  React.useEffect(() => {
+    return () => {
+      onDateSelect?.call(null, selectedDateRef.current);
+    };
+  }, []);
 
-    onRequestClose?.call(null);
-  }, [closeOnClickOutside, onRequestClose]);
-
-  useClickOutside(containerRef, onClickOutside, 'mousedown');
+  React.useEffect(() => {
+    selectedDateRef.current = selectedDate;
+  }, [selectedDate]);
 
   return (
     <DaysPicker.Container
@@ -199,6 +213,8 @@ export const DaysPicker = ({
         {LEGEND.map((l) => (
           <div key={l}>{l}</div>
         ))}
+
+        <DaysPicker.Divider />
       </DaysPicker.Legend>
 
       <DaysPicker.DaysContainer height={cellSize.height}>
@@ -207,7 +223,7 @@ export const DaysPicker = ({
             {row.map((day) => (
               <DaysPicker.Day
                 key={day.toISOString()}
-                onClick={() => onDayClick(day)}
+                onClick={(e) => onDayClick(day)}
                 className={`${isDaySelected(day) && 'selected'} ${
                   !isCurrentMonth(day) && 'other'
                 }`}
@@ -228,6 +244,7 @@ DaysPicker.Container = styled.div<{
 }>`
   position: absolute;
   background: #33455c85;
+  backdrop-filter: blur(4.5px);
   width: ${({ width }) => `calc(${width}px * 7 + 12px + 20px)`};
 
   font-size: ${({ baseFontSize }) => baseFontSize}px;
@@ -248,13 +265,14 @@ DaysPicker.TopBar = styled.div`
 `;
 
 DaysPicker.Legend = styled.div`
+  position: relative;
   padding: 4px 10px;
 
   display: grid;
   grid-template: 1fr / repeat(7, 1fr);
   align-items: center;
   font-size: 0.75em;
-  margin: 6px 0;
+  margin: 6px 0 12px 0;
   color: #ffffff;
 
   > * {
@@ -288,6 +306,7 @@ DaysPicker.Arrow = styled.div<{ up: boolean; dayWidth: number }>`
 `;
 
 DaysPicker.DaysContainer = styled.div<{ height: number }>`
+  position: relative;
   color: #ffffff;
   height: ${({ height }) => `calc(${height}px * 6 + 10px)`};
 
@@ -297,12 +316,12 @@ DaysPicker.DaysContainer = styled.div<{ height: number }>`
   padding: 0 10px 10px 10px;
 
   .selected {
-    background: #232323;
-    color: #ffffff;
+    background: #ddffff20;
+    border: 2px solid #ffffff;
   }
 
   .other {
-    color: #6a6a6a;
+    color: #b3b3b3;
   }
 
   font-size: 0.75em;
@@ -325,6 +344,23 @@ DaysPicker.Day = styled.div`
   transition: border-color 0.3s, color 0.3s, background 0.3s;
 
   :hover {
-    border-color: #232323;
+    border-color: #ffffff;
   }
+`;
+
+DaysPicker.Divider = styled.div`
+  height: 1px;
+  width: 100%;
+
+  background: linear-gradient(
+    to right,
+    transparent 5%,
+    #ffffff,
+    transparent 95%
+  );
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0.3;
 `;
