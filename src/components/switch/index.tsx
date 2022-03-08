@@ -77,7 +77,6 @@ Switch.Container = styled.div<{
     height: ${({ height, padding }) => height - padding * 2}px;
 
     border-radius: ${({ borderRadius }) => borderRadius}px;
-    box-shadow: inset 0 0 3px 2px rgba(0, 0, 0, 0.5);
     background: ${({ color }) => color};
     transition: left 0.3s, background 0.3s;
   }

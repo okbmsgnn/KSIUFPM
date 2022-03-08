@@ -68,7 +68,7 @@ const CreateTableForm = () => {
 
         <ColorPicker size={20} defaultColor="#0af" />
 
-        <Switch size={152} disabled={false} type="rounded" />
+        <Switch size={52} disabled={false} type="squared" />
       </CreateTableForm.Container>
     </CreateTableForm.Background>
   );
