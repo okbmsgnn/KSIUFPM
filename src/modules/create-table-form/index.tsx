@@ -53,8 +53,14 @@ const CreateTableForm = () => {
             }}
             placeholder={selectedDate?.toISOString()}
             width={300}
-            onMouseDown={() => setIsDatePickerOpen(true)}
           />
+
+          <CreateTableForm.PickerContainer>
+            <ColorPicker size={20} defaultColor="#0af" />
+            <ColorPicker size={20} defaultColor="#0af" />
+            <ColorPicker size={20} defaultColor="#0af" />
+            <ColorPicker size={20} defaultColor="#0af" />
+          </CreateTableForm.PickerContainer>
         </CreateTableForm.InputContainer>
 
         {isDatePickerOpen && (
@@ -80,11 +86,22 @@ CreateTableForm.TitleText = styled.div`
 `;
 
 CreateTableForm.InputContainer = styled.div`
+  width: 300px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   margin: 20px 0 0 20px;
   gap: 20px;
+`;
+
+CreateTableForm.PickerContainer = styled.div`
+  padding: 15px 15px 15px 15px;
+  display: flex;
+
+  gap: 15px;
+
+  background: #191919;
+  align-self: flex-end;
 `;
 
 CreateTableForm.Container = styled.div`

@@ -19,7 +19,6 @@ export const ColorPicker = ({
 
   return (
     <ColorPicker.Container
-      htmlFor="color-picker"
       color={color}
       style={{
         background: color,
@@ -28,7 +27,6 @@ export const ColorPicker = ({
     >
       <input
         type="color"
-        id="color-picker"
         onChange={(e) => setColor(e.target.value)}
         value={color}
       />
