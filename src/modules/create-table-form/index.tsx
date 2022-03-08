@@ -52,8 +52,14 @@ const CreateTableForm = () => {
             }}
             placeholder={selectedDate?.toISOString()}
             width={300}
-            onMouseDown={() => setIsDatePickerOpen(true)}
           />
+
+          <CreateTableForm.PickerContainer>
+            <ColorPicker size={20} defaultColor="#0af" />
+            <ColorPicker size={20} defaultColor="#0af" />
+            <ColorPicker size={20} defaultColor="#0af" />
+            <ColorPicker size={20} defaultColor="#0af" />
+          </CreateTableForm.PickerContainer>
         </CreateTableForm.InputContainer>
 
         {isDatePickerOpen && (
@@ -64,12 +70,6 @@ const CreateTableForm = () => {
             />
           </Portal>
         )}
-        <CreateTableForm.PickerContainer>
-          <ColorPicker size={20} defaultColor="#0af" />
-          <ColorPicker size={20} defaultColor="#0af" />
-          <ColorPicker size={20} defaultColor="#0af" />
-          <ColorPicker size={20} defaultColor="#0af" />
-        </CreateTableForm.PickerContainer>
       </CreateTableForm.Container>
     </CreateTableForm.Background>
   );
@@ -81,6 +81,7 @@ CreateTableForm.TitleText = styled.div`
 `;
 
 CreateTableForm.InputContainer = styled.div`
+  width: 300px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -91,17 +92,11 @@ CreateTableForm.InputContainer = styled.div`
 CreateTableForm.PickerContainer = styled.div`
   padding: 15px 15px 15px 15px;
   display: flex;
-  flex-direction: row;
-  position: relative;
-  left: 130px;
-  width: max-content;
-  font-size: 15px;
 
-  align-items: flex-start;
-  margin: 20px 0 0 20px;
   gap: 15px;
 
   background: #191919;
+  align-self: flex-end;
 `;
 
 CreateTableForm.Container = styled.div`
