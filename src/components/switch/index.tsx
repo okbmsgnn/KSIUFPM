@@ -18,7 +18,7 @@ export const Switch = ({
 }: SwitchProps) => {
   const [state, setState] = React.useState(defaultState);
   const color = React.useMemo(() => {
-    return `hsl(${state ? 113 : 0}, ${disabled ? 5 : 65}%, 50%)`;
+    return `hsl(${state ? 200 : 0}, ${disabled ? 5 : 45}%, 50%)`;
   }, [disabled, state]);
 
   React.useEffect(() => {

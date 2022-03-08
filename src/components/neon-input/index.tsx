@@ -25,7 +25,7 @@ const NeonInput = ({
   const inputRef = React.useRef<HTMLInputElement | null>(null);
 
   return (
-    <NeonInput.Container {...props}>
+    <NeonInput.Container {...props} width={width}>
       <NeonInput.Glow color={glowColor} isActive={isActive} />
       <NeonInput.Backdrop color={backdropColor} isActive={isActive} />
       <NeonInput.Input
@@ -36,7 +36,6 @@ const NeonInput = ({
           isActive ? border.activeColor : border.defaultColor
         }
         placeholder={placeholder}
-        width={width}
       />
     </NeonInput.Container>
   );
@@ -46,9 +45,12 @@ interface InputProps {
   borderColor: string;
 }
 
-NeonInput.Container = styled.div`
+NeonInput.Container = styled.div<{ width?: number }>`
   position: relative;
-  display: inline-block;
+  > * {
+    width: ${({ width }) =>
+      width ? `${width}px` : '100%'} !important;
+  }
 `;
 
 NeonInput.Input = styled.input<InputProps>`
@@ -58,7 +60,6 @@ NeonInput.Input = styled.input<InputProps>`
   outline: none;
   border: 0;
   z-index: 2;
-  width: ${({ width }) => width}px;
 
   border-bottom: 2px solid ${({ borderColor }) => borderColor};
   color: #ffffff;

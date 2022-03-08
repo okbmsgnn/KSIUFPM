@@ -10,8 +10,16 @@ const CreateTableForm = () => {
   const [isDatePickerOpen, setIsDatePickerOpen] =
     React.useState(false);
 
-  const [selectedDate, setSelectedDate] = React.useState<Date | null>(
-    null
+  const commonInputAttributes = React.useMemo(
+    () => ({
+      backdropColor: '#444',
+      glowColor: 'aqua',
+      border: {
+        activeColor: '#fff',
+        defaultColor: '#777',
+      },
+    }),
+    []
   );
 
   return (
@@ -21,77 +29,86 @@ const CreateTableForm = () => {
           Create new table
         </CreateTableForm.TitleText>
 
-        <CreateTableForm.InputContainer>
-          <NeonInput
-            backdropColor="#444"
-            glowColor="aqua"
-            border={{
-              activeColor: '#fff',
-              defaultColor: '#777',
-            }}
-            placeholder="Table name"
-            width={300}
-          />
+        <CreateTableForm.Content>
+          <div>
+            <CreateTableForm.InputContainer>
+              <NeonInput
+                {...commonInputAttributes}
+                placeholder="Table name"
+              />
 
-          <NeonInput
-            backdropColor="#444"
-            glowColor="aqua"
-            border={{
-              activeColor: '#fff',
-              defaultColor: '#777',
-            }}
-            placeholder="Table description"
-            width={300}
-          />
+              <NeonInput
+                {...commonInputAttributes}
+                placeholder="Table description"
+              />
 
-          <NeonInput
-            backdropColor="#444"
-            glowColor="aqua"
-            border={{
-              activeColor: '#fff',
-              defaultColor: '#777',
-            }}
-            placeholder={selectedDate?.toISOString()}
-            width={300}
-          />
+              <NeonInput
+                {...commonInputAttributes}
+                placeholder="Table tags"
+              />
+            </CreateTableForm.InputContainer>
 
-          <CreateTableForm.PickerContainer>
-            <ColorPicker size={20} defaultColor="#0af" />
-            <ColorPicker size={20} defaultColor="#0af" />
-            <ColorPicker size={20} defaultColor="#0af" />
-            <ColorPicker size={20} defaultColor="#0af" />
-          </CreateTableForm.PickerContainer>
-        </CreateTableForm.InputContainer>
+            <CreateTableForm.AdvancedSettingsContainer>
+              <CreateTableForm.AdvancedSettingsTitle>
+                Advanced Settings
+              </CreateTableForm.AdvancedSettingsTitle>
 
-        {isDatePickerOpen && (
-          <Portal>
-            <NeonDatePicker
-              onRequestClose={() => setIsDatePickerOpen(false)}
-              onDateSelect={(date) => setSelectedDate(date)}
-            />
-          </Portal>
-        )}
+              <CreateTableForm.AdvancedSettings></CreateTableForm.AdvancedSettings>
+            </CreateTableForm.AdvancedSettingsContainer>
+          </div>
 
-        <ColorPicker size={20} defaultColor="#0af" />
+          <div></div>
+        </CreateTableForm.Content>
 
-        <Switch size={52} disabled={false} type="squared" />
+        {/* <Switch
+          size={52}
+          disabled={isDatePickerOpen}
+          type="squared"
+        /> */}
+
+        {/* <CreateTableForm.PickerContainer>
+          <ColorPicker size={20} defaultColor="#0af" />
+          <ColorPicker size={20} defaultColor="#0af" />
+          <ColorPicker size={20} defaultColor="#0af" />
+          <ColorPicker size={20} defaultColor="#0af" />
+        </CreateTableForm.PickerContainer> */}
       </CreateTableForm.Container>
+
+      {isDatePickerOpen && (
+        <Portal>
+          <NeonDatePicker
+            onRequestClose={() => setIsDatePickerOpen(false)}
+            onDateSelect={(date) => {}}
+          />
+        </Portal>
+      )}
     </CreateTableForm.Background>
   );
 };
 
 CreateTableForm.TitleText = styled.div`
   font-size: 45px;
-  margin: 20px 0 0 20px;
+  line-height: 45px;
+
+  margin-bottom: 20px;
+`;
+
+CreateTableForm.Content = styled.div`
+  flex-grow: 1;
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: 1fr 1fr;
 `;
 
 CreateTableForm.InputContainer = styled.div`
   width: 300px;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  margin: 20px 0 0 20px;
   gap: 20px;
+
+  > input {
+    width: 100%;
+  }
 `;
 
 CreateTableForm.PickerContainer = styled.div`
@@ -104,17 +121,10 @@ CreateTableForm.PickerContainer = styled.div`
   align-self: flex-end;
 `;
 
-CreateTableForm.Container = styled.div`
-  background: #232323;
-  color: #ffffff;
-  width: 800px;
-  height: 500px;
-`;
-
 CreateTableForm.Background = styled.div`
+  position: absolute;
   top: 0;
   left: 0;
-  position: absolute;
   background: #23232377;
   width: 100%;
   height: 100%;
@@ -122,6 +132,34 @@ CreateTableForm.Background = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+CreateTableForm.Container = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  box-sizing: border-box;
+  background: var(--color-z1);
+  color: #ffffff;
+  width: 800px;
+  height: 500px;
+
+  padding: 20px;
+`;
+
+CreateTableForm.AdvancedSettingsContainer = styled.div`
+  margin-top: 20px;
+`;
+
+CreateTableForm.AdvancedSettingsTitle = styled.div`
+  color: #fff;
+  margin-bottom: 4px;
+`;
+
+CreateTableForm.AdvancedSettings = styled.div`
+  background: var(--color-z3);
+  height: 200px;
+  border-top: 2px solid #fff;
 `;
 
 export { CreateTableForm };

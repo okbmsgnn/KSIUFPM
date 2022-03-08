@@ -21,3 +21,15 @@ body {
 .slight-shadow {
   box-shadow: 7px 7px 25px 7px #0005;
 }
+
+:root {
+  --color-z1: #1c1c1c;
+  --color-z2: #212121;
+  --color-z3: #232323;
+  --color-z4: #262626;
+  --color-z5: #2c2c2c;
+  --color-z6: #2d2d2d;
+  --color-z7: #313131;
+  --color-z8: #333333;
+  --color-z9: #373737;
+}
