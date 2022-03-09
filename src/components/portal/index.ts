@@ -8,6 +8,7 @@ interface PortalProps {
 export const Portal = ({ children }: PortalProps) => {
   const container = React.useMemo(() => {
     const element = document.createElement('div');
+    element.style.width = element.style.height = '100%';
     element.id = 'portal';
     element.style.position = 'absolute';
     element.style.zIndex = '9999';

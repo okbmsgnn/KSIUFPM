@@ -26,9 +26,9 @@ export interface CustomDatePickerChildrenProps
 }
 
 export interface CustomDatePickerProps {
-  minDate?: Date;
-  maxDate?: Date;
-  initialDate?: Date;
+  minDate?: Date | null;
+  maxDate?: Date | null;
+  initialDate?: Date | null;
   children: (props: CustomDatePickerChildrenProps) => React.ReactNode;
 }
 
@@ -36,13 +36,13 @@ export const CustomDatePicker = ({
   children,
   minDate,
   maxDate,
-  initialDate,
+  initialDate = null,
 }: CustomDatePickerProps) => {
   const [state, dispatch] = React.useReducer(
     customDatePickerReducer,
     {
       ...initialState,
-      selectedDate: initialDate ?? null,
+      selectedDate: initialDate,
     }
   );
 

@@ -1,10 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import { ColorPicker } from '../../components/color-picker';
-import { NeonDatePicker } from '../../components/neon-date-picker';
 import { NeonInput } from '../../components/neon-input';
-import { Portal } from '../../components/portal';
-import { Switch } from '../../components/switch';
+import { RangePicker } from '../../components/range-picker';
 
 const CreateTableForm = () => {
   const [isDatePickerOpen, setIsDatePickerOpen] =
@@ -30,7 +28,7 @@ const CreateTableForm = () => {
         </CreateTableForm.TitleText>
 
         <CreateTableForm.Content>
-          <div>
+          <CreateTableForm.LeftPanel>
             <CreateTableForm.InputContainer>
               <NeonInput
                 {...commonInputAttributes}
@@ -53,35 +51,60 @@ const CreateTableForm = () => {
                 Advanced Settings
               </CreateTableForm.AdvancedSettingsTitle>
 
-              <CreateTableForm.AdvancedSettings></CreateTableForm.AdvancedSettings>
+              <CreateTableForm.AdvancedSettings>
+                <CreateTableForm.AdvancedSettingRow>
+                  <div>Date Interval</div>
+
+                  <RangePicker />
+                </CreateTableForm.AdvancedSettingRow>
+
+                <CreateTableForm.AdvancedSettingRow>
+                  <div>Color Palette</div>
+
+                  <CreateTableForm.PickerContainer>
+                    <ColorPicker size={15} defaultColor="#0af" />
+                    <ColorPicker size={15} defaultColor="#0af" />
+                    <ColorPicker size={15} defaultColor="#0af" />
+                    <ColorPicker size={15} defaultColor="#0af" />
+                  </CreateTableForm.PickerContainer>
+                </CreateTableForm.AdvancedSettingRow>
+
+                <CreateTableForm.AdvancedSettingRow>
+                  <div>Step</div>
+
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <select>
+                      <option value="">Hours</option>
+                      <option value="">Days</option>
+                      <option value="">Months</option>
+                    </select>
+
+                    <input type="number" min={1} />
+                  </div>
+                </CreateTableForm.AdvancedSettingRow>
+
+                <CreateTableForm.AdvancedSettingsDivider />
+              </CreateTableForm.AdvancedSettings>
             </CreateTableForm.AdvancedSettingsContainer>
-          </div>
+          </CreateTableForm.LeftPanel>
 
-          <div></div>
+          <CreateTableForm.RightPanel>
+            <CreateTableForm.ListTitle>
+              Template from:
+            </CreateTableForm.ListTitle>
+
+            <CreateTableForm.List>
+              {Array.from({ length: 5 }, (_, idx) => (
+                <div>ITEM {idx + 1}</div>
+              ))}
+            </CreateTableForm.List>
+
+            <CreateTableForm.ButtonCreate>
+              Create Table
+            </CreateTableForm.ButtonCreate>
+          </CreateTableForm.RightPanel>
         </CreateTableForm.Content>
-
-        {/* <Switch
-          size={52}
-          disabled={isDatePickerOpen}
-          type="squared"
-        /> */}
-
-        {/* <CreateTableForm.PickerContainer>
-          <ColorPicker size={20} defaultColor="#0af" />
-          <ColorPicker size={20} defaultColor="#0af" />
-          <ColorPicker size={20} defaultColor="#0af" />
-          <ColorPicker size={20} defaultColor="#0af" />
-        </CreateTableForm.PickerContainer> */}
       </CreateTableForm.Container>
-
-      {isDatePickerOpen && (
-        <Portal>
-          <NeonDatePicker
-            onRequestClose={() => setIsDatePickerOpen(false)}
-            onDateSelect={(date) => {}}
-          />
-        </Portal>
-      )}
     </CreateTableForm.Background>
   );
 };
@@ -98,6 +121,7 @@ CreateTableForm.Content = styled.div`
   display: grid;
   grid-template-rows: 1fr;
   grid-template-columns: 1fr 1fr;
+  gap: 16px;
 `;
 
 CreateTableForm.InputContainer = styled.div`
@@ -112,12 +136,12 @@ CreateTableForm.InputContainer = styled.div`
 `;
 
 CreateTableForm.PickerContainer = styled.div`
-  padding: 15px 15px 15px 15px;
+  padding: 10px;
   display: flex;
 
   gap: 15px;
 
-  background: #191919;
+  background: var(--color-z6);
   align-self: flex-end;
 `;
 
@@ -147,8 +171,58 @@ CreateTableForm.Container = styled.div`
   padding: 20px;
 `;
 
+CreateTableForm.LeftPanel = styled.div`
+  display: grid;
+  grid-template: auto minmax(0, 1fr) / 1fr;
+`;
+
+CreateTableForm.RightPanel = styled.div`
+  display: grid;
+  grid-template: auto 1fr auto / 1fr;
+
+  gap: 16px;
+`;
+
+CreateTableForm.ListTitle = styled.div`
+  line-height: 1;
+`;
+
+CreateTableForm.List = styled.div`
+  background: #131313;
+  overflow: auto;
+  max-height: 100%;
+
+  > div {
+    padding: 4px 8px;
+
+    :hover {
+      background: var(--color-z5) !important;
+    }
+  }
+`;
+
+CreateTableForm.ButtonCreate = styled.div`
+  background: var(--color-z3);
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: 0.2s;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 0.8em;
+
+  :hover {
+    background: var(--color-z5);
+    transition: 0.2s;
+  }
+`;
+
 CreateTableForm.AdvancedSettingsContainer = styled.div`
   margin-top: 20px;
+  display: grid;
+  grid-template: auto minmax(0, 1fr) / 1fr;
 `;
 
 CreateTableForm.AdvancedSettingsTitle = styled.div`
@@ -157,9 +231,34 @@ CreateTableForm.AdvancedSettingsTitle = styled.div`
 `;
 
 CreateTableForm.AdvancedSettings = styled.div`
+  position: relative;
   background: var(--color-z3);
-  height: 200px;
   border-top: 2px solid #fff;
+  border-left: 3px solid var(--color-z6);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 2px 0 0 8px;
+
+  font-size: 0.9rem;
+`;
+
+CreateTableForm.AdvancedSettingRow = styled.div`
+  display: grid;
+  align-items: center;
+  grid-template-rows: 1fr;
+  grid-template-columns: 100px 1fr;
+  gap: 8px;
+`;
+
+CreateTableForm.AdvancedSettingsDivider = styled.div`
+  background: var(--color-z6);
+  width: 3px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 98.5px;
 `;
 
 export { CreateTableForm };

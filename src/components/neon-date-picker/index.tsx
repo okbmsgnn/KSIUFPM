@@ -10,11 +10,19 @@ import { DaysPicker } from './DaysPicker';
 interface NeonDatePickerProps {
   onRequestClose: () => void;
   onDateSelect: (date: Date | null) => void;
+  minDate?: Date | null;
+  maxDate?: Date | null;
+  initialDate?: Date | null;
+  position?: { x: number; y: number } | 'center';
 }
 
 export const NeonDatePicker = ({
   onRequestClose,
   onDateSelect,
+  initialDate,
+  maxDate,
+  minDate,
+  position = 'center',
 }: NeonDatePickerProps) => {
   const renderPicker = React.useCallback(
     (props: CustomDatePickerChildrenProps) => {
@@ -23,7 +31,7 @@ export const NeonDatePicker = ({
           <DaysPicker
             {...props}
             cellSize={{ height: 40, width: 45 }}
-            pickerPosition={{ x: 200, y: 300 }}
+            pickerPosition={position}
             closeOnClickOutside
             onRequestClose={onRequestClose}
             onDateSelect={onDateSelect}
@@ -37,7 +45,11 @@ export const NeonDatePicker = ({
   );
 
   return (
-    <CustomDatePicker>
+    <CustomDatePicker
+      initialDate={initialDate}
+      maxDate={maxDate}
+      minDate={minDate}
+    >
       {(props) => renderPicker(props)}
     </CustomDatePicker>
   );

@@ -12,10 +12,12 @@ interface DaysPickerProps extends CustomDatePickerChildrenProps {
     width: number;
     height: number;
   };
-  pickerPosition?: {
-    x: number;
-    y: number;
-  };
+  pickerPosition?:
+    | {
+        x: number;
+        y: number;
+      }
+    | 'center';
   closeOnClickOutside?: boolean;
   onRequestClose?: () => void;
   onDateSelect?: (date: Date | null) => void;
@@ -44,7 +46,17 @@ export const DaysPicker = ({
   onRequestClose,
   onDateSelect,
 }: DaysPickerProps) => {
-  const [position, setPosition] = React.useState(pickerPosition);
+  const [isPositionSetup, setIsPositionSetup] = React.useState(
+    pickerPosition !== 'center'
+  );
+  const [position, setPosition] = React.useState(
+    pickerPosition === 'center'
+      ? {
+          x: 0,
+          y: 0,
+        }
+      : pickerPosition
+  );
   const [mousePivot, setMousePivot] = React.useState<{
     x: number;
     y: number;
@@ -171,6 +183,18 @@ export const DaysPicker = ({
   React.useEffect(() => {
     selectedDateRef.current = selectedDate;
   }, [selectedDate]);
+
+  React.useEffect(() => {
+    if (isPositionSetup || !containerRef.current) return;
+
+    setIsPositionSetup(containerRef.current.clientHeight !== 0);
+    setPosition({
+      x:
+        window.innerWidth / 2 - containerRef.current.clientHeight / 2,
+      y:
+        window.innerHeight / 2 - containerRef.current.clientWidth / 2,
+    });
+  });
 
   return (
     <DaysPicker.Container
