@@ -28,15 +28,19 @@ export const RangePicker = ({
   });
 
   const setStartDate = React.useCallback(
-    (date: Date | null) =>
-      setDates((prev) => ({ ...prev, start: date })),
-    []
+    (date: Date | null) => {
+      onStartDateSelect?.call(null, date);
+      setDates((prev) => ({ ...prev, start: date }));
+    },
+    [onStartDateSelect]
   );
 
   const setEndDate = React.useCallback(
-    (date: Date | null) =>
-      setDates((prev) => ({ ...prev, end: date })),
-    []
+    (date: Date | null) => {
+      onEndDateSelect?.call(null, date);
+      setDates((prev) => ({ ...prev, end: date }));
+    },
+    [onEndDateSelect]
   );
 
   React.useEffect(() => setStartDate(startDate), [startDate]);
@@ -49,11 +53,14 @@ export const RangePicker = ({
 
   return (
     <RangePicker.Container>
-      <DateInput onDateSelect={setStartDate} />
+      <DateInput
+        onDateSelect={setStartDate}
+        selectedDate={startDate}
+      />
 
       <IconClock width={21} height={21} />
 
-      <DateInput onDateSelect={setEndDate} />
+      <DateInput onDateSelect={setEndDate} selectedDate={endDate} />
     </RangePicker.Container>
   );
 };

@@ -1,33 +1,36 @@
 import React from 'react';
 import styled from 'styled-components';
 
-interface ColorPickerProps {
-  defaultColor?: string;
+type ColorPickerProps = JSX.IntrinsicElements['input'] & {
   size?: number;
-}
+  value?: string;
+};
 
 export const ColorPicker = ({
-  defaultColor,
   size = 40,
+  ...props
 }: ColorPickerProps) => {
-  const [color, setColor] = React.useState(defaultColor ?? '#ffffff');
+  const [color, setColor] = React.useState(props.value ?? '#ffffff');
 
   React.useEffect(
-    () => setColor(defaultColor ?? '#ffffff'),
-    [defaultColor]
+    () => setColor(props.value ?? '#ffffff'),
+    [props.value]
   );
 
   return (
     <ColorPicker.Container
-      color={color}
       style={{
         background: color,
       }}
       size={size}
     >
       <input
+        {...props}
         type="color"
-        onChange={(e) => setColor(e.target.value)}
+        onChange={(e) => {
+          setColor(e.target.value);
+          props.onChange?.call(null, e);
+        }}
         value={color}
       />
     </ColorPicker.Container>

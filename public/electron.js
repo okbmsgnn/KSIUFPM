@@ -1,5 +1,8 @@
+const remote = require('@electron/remote/main');
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
+
+remote.initialize();
 
 const env = process.env.NODE_ENV || 'development';
 
@@ -16,6 +19,8 @@ const createWindow = () => {
     minWidth: 1280,
     minHeight: 720,
   });
+
+  remote.enable(win.webContents);
 
   if (env === 'development') {
     win.loadURL('http://localhost:3000');

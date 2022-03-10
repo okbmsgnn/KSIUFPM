@@ -21,15 +21,16 @@ export const DateInput = ({
     React.useState(false);
   const [date, setDate] = React.useState(selectedDate);
 
+  React.useEffect(() => setDate(selectedDate), [selectedDate]);
+
   React.useEffect(() => onDateSelect?.call(null, date), [date]);
 
   return (
     <>
       <NeonInput
         onClick={() => setIsDatePickerOpen(true)}
-        initialValue={date ? timeFormat('%Y/%m/%d')(date) : ''}
+        value={date ? timeFormat('%Y/%m/%d')(date) : ''}
         width={100}
-        textAlign="center"
       />
 
       {isDatePickerOpen && (

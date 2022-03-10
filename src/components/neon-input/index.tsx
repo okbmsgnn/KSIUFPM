@@ -1,79 +1,71 @@
 import React from 'react';
 import styled from 'styled-components';
 
-interface NeonInputProps {
+type NeonInputProps = JSX.IntrinsicElements['input'] & {
   border?: {
     activeColor: string;
     defaultColor: string;
   };
   glowColor?: string;
   backdropColor?: string;
-  placeholder?: string;
   width?: number;
-  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
-  initialValue?: string;
-  textAlign?: 'left' | 'center' | 'right';
-}
+  onContainerClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  ref?: any;
+};
 
 const NeonInput = ({
   border = { activeColor: '#fff', defaultColor: '#444' },
   backdropColor = '#fff',
   glowColor = '#fff',
-  placeholder = '',
   width,
-  onClick,
-  initialValue = '',
-  textAlign = 'left',
+  onContainerClick,
   ...props
 }: NeonInputProps) => {
   const [isActive, setIsActive] = React.useState(false);
-  const [value, setValue] = React.useState(initialValue);
+  const [value, setValue] = React.useState(props.value);
 
-  React.useEffect(() => setValue(initialValue), [initialValue]);
+  React.useEffect(() => setValue(props.value), [props.value]);
 
   return (
-    <NeonInput.Container
-      {...props}
-      width={width}
-      onClick={onClick}
-      textAlign={textAlign}
-    >
+    <NeonInput.Container width={width} onClick={onContainerClick}>
       <NeonInput.Glow color={glowColor} isActive={isActive} />
+
       <NeonInput.Backdrop color={backdropColor} isActive={isActive} />
+
       <NeonInput.Input
-        onFocus={() => setIsActive(true)}
-        onBlur={() => setIsActive(false)}
+        {...props}
+        onFocus={(e) => {
+          setIsActive(true);
+          props.onFocus?.call(null, e);
+        }}
+        onBlur={(e) => {
+          setIsActive(false);
+          props.onBlur?.call(null, e);
+        }}
         borderColor={
           isActive ? border.activeColor : border.defaultColor
         }
-        placeholder={placeholder}
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => {
+          setValue(e.target.value);
+          props.onChange?.call(null, e);
+        }}
       />
     </NeonInput.Container>
   );
 };
 
-interface InputProps {
-  borderColor: string;
-}
-
 NeonInput.Container = styled.div<{
   width?: number;
-  textAlign: string;
 }>`
   position: relative;
   > * {
     width: ${({ width }) =>
       width ? `${width}px` : '100%'} !important;
   }
-
-  input {
-    text-align: ${({ textAlign }) => textAlign};
-  }
 `;
 
-NeonInput.Input = styled.input<InputProps>`
+NeonInput.Input = styled.input<{ borderColor: string }>`
   background: transparent;
   position: relative;
   display: block;

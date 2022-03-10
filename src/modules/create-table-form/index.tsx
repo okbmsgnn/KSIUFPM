@@ -2,11 +2,33 @@ import React from 'react';
 import styled from 'styled-components';
 import { ColorPicker } from '../../components/color-picker';
 import { NeonInput } from '../../components/neon-input';
+import { NumericInput } from '../../components/numeric-input';
 import { RangePicker } from '../../components/range-picker';
+import { SelectOption } from '../../components/select-option';
+import { StepType, TableFormData } from './model';
+
+import fs from 'fs';
+import path from 'path';
+import { app } from '@electron/remote';
 
 const CreateTableForm = () => {
-  const [isDatePickerOpen, setIsDatePickerOpen] =
-    React.useState(false);
+  const data = React.useRef<TableFormData>({
+    name: '',
+    description: '',
+    tags: '',
+    startDate: null,
+    endDate: null,
+    colorPalette: ['#b0f4ff', '#d7ffbf', '#86aff7', '#9a86f7'],
+    step: { type: 'days', value: 1 },
+  });
+
+  const [template, setTemplate] = React.useState<TableFormData>(
+    data.current
+  );
+
+  const [templates, setTemplates] = React.useState<TableFormData[]>(
+    []
+  );
 
   const commonInputAttributes = React.useMemo(
     () => ({
@@ -19,6 +41,76 @@ const CreateTableForm = () => {
     }),
     []
   );
+
+  const getColorPickerProps = React.useCallback(
+    (idx: number) => ({
+      size: 15,
+      value: template.colorPalette[idx],
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+        (template.colorPalette[idx] = e.target.value),
+    }),
+    [template]
+  );
+
+  const onSubmit = React.useCallback(() => {
+    fs.writeFile(
+      path.join(
+        app.getAppPath(),
+        'tables',
+        `${data.current.name}_${Date.now()}.json`
+      ),
+      JSON.stringify(data.current, null, 4),
+      { encoding: 'utf-8' },
+      (error) => error && alert(error.message)
+    );
+  }, []);
+
+  React.useEffect(() => {
+    data.current = template;
+  }, [template]);
+
+  React.useEffect(() => {
+    const basePath = path.join(app.getAppPath(), 'tables');
+
+    const loadTemplates = () => {
+      fs.readdir(basePath, (err, files) => {
+        if (err) return;
+
+        Promise.all(
+          files.map(
+            (file) =>
+              new Promise((res) => {
+                fs.readFile(
+                  path.join(basePath, file),
+                  { encoding: 'utf-8' },
+                  (err, data) => {
+                    if (err) res([]);
+                    else {
+                      const json = JSON.parse(data);
+                      res({
+                        ...json,
+                        startDate: json.startDate
+                          ? new Date(json.startDate)
+                          : null,
+                        endDate: json.endDate
+                          ? new Date(json.endDate)
+                          : null,
+                      });
+                    }
+                  }
+                );
+              })
+          )
+        ).then((templates) => setTemplates(templates as any));
+      });
+    };
+
+    loadTemplates();
+
+    const watcher = fs.watch(basePath, {}, loadTemplates);
+
+    return () => watcher.close();
+  }, []);
 
   return (
     <CreateTableForm.Background>
@@ -33,16 +125,24 @@ const CreateTableForm = () => {
               <NeonInput
                 {...commonInputAttributes}
                 placeholder="Table name"
+                onChange={(e) => (data.current.name = e.target.value)}
+                value={template.name}
               />
 
               <NeonInput
                 {...commonInputAttributes}
                 placeholder="Table description"
+                onChange={(e) =>
+                  (data.current.description = e.target.value)
+                }
+                value={template.description}
               />
 
               <NeonInput
                 {...commonInputAttributes}
                 placeholder="Table tags"
+                onChange={(e) => (data.current.tags = e.target.value)}
+                value={template.tags}
               />
             </CreateTableForm.InputContainer>
 
@@ -55,17 +155,26 @@ const CreateTableForm = () => {
                 <CreateTableForm.AdvancedSettingRow>
                   <div>Date Interval</div>
 
-                  <RangePicker />
+                  <RangePicker
+                    startDate={template.startDate}
+                    endDate={template.endDate}
+                    onStartDateSelect={(date) =>
+                      (template.startDate = date)
+                    }
+                    onEndDateSelect={(date) =>
+                      (template.endDate = date)
+                    }
+                  />
                 </CreateTableForm.AdvancedSettingRow>
 
                 <CreateTableForm.AdvancedSettingRow>
                   <div>Color Palette</div>
 
                   <CreateTableForm.PickerContainer>
-                    <ColorPicker size={15} defaultColor="#0af" />
-                    <ColorPicker size={15} defaultColor="#0af" />
-                    <ColorPicker size={15} defaultColor="#0af" />
-                    <ColorPicker size={15} defaultColor="#0af" />
+                    <ColorPicker {...getColorPickerProps(0)} />
+                    <ColorPicker {...getColorPickerProps(1)} />
+                    <ColorPicker {...getColorPickerProps(2)} />
+                    <ColorPicker {...getColorPickerProps(3)} />
                   </CreateTableForm.PickerContainer>
                 </CreateTableForm.AdvancedSettingRow>
 
@@ -73,13 +182,28 @@ const CreateTableForm = () => {
                   <div>Step</div>
 
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <select>
-                      <option value="">Hours</option>
-                      <option value="">Days</option>
-                      <option value="">Months</option>
-                    </select>
+                    <SelectOption
+                      value={template.step.type}
+                      onChange={(e) =>
+                        (data.current.step.type = e.target
+                          .value as StepType)
+                      }
+                    >
+                      <option value="hours">Hours</option>
+                      <option value="days">Days</option>
+                      <option value="months">Months</option>
+                    </SelectOption>
 
-                    <input type="number" min={1} />
+                    <NumericInput
+                      type="number"
+                      min={1}
+                      value={template.step.value}
+                      onChange={(e) =>
+                        (data.current.step.value = Number(
+                          e.target.value
+                        ))
+                      }
+                    />
                   </div>
                 </CreateTableForm.AdvancedSettingRow>
 
@@ -93,13 +217,19 @@ const CreateTableForm = () => {
               Template from:
             </CreateTableForm.ListTitle>
 
-            <CreateTableForm.List>
-              {Array.from({ length: 5 }, (_, idx) => (
-                <div>ITEM {idx + 1}</div>
-              ))}
-            </CreateTableForm.List>
+            <CreateTableForm.ListContainer>
+              <CreateTableForm.List>
+                <CreateTableForm.ListScroller>
+                  {Array.from(templates, (t) => (
+                    <div onClick={() => setTemplate(t)}>
+                      {t.name ? t.name : '<empty_name>'}
+                    </div>
+                  ))}
+                </CreateTableForm.ListScroller>
+              </CreateTableForm.List>
+            </CreateTableForm.ListContainer>
 
-            <CreateTableForm.ButtonCreate>
+            <CreateTableForm.ButtonCreate onClick={onSubmit}>
               Create Table
             </CreateTableForm.ButtonCreate>
           </CreateTableForm.RightPanel>
@@ -187,13 +317,22 @@ CreateTableForm.ListTitle = styled.div`
   line-height: 1;
 `;
 
-CreateTableForm.List = styled.div`
+CreateTableForm.ListContainer = styled.div`
   background: #131313;
-  overflow: auto;
-  max-height: 100%;
+  position: relative;
+`;
 
+CreateTableForm.List = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+`;
+
+CreateTableForm.ListScroller = styled.div`
   > div {
     padding: 4px 8px;
+    min-height: 30px;
 
     :hover {
       background: var(--color-z5) !important;
