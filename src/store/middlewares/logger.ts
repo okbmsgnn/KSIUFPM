@@ -10,6 +10,7 @@ export const loggerMiddleware: Middleware =
 
     try {
       result = next(action);
+      if (result.error) error = result.error;
     } catch (e) {
       error = e as Error;
     }

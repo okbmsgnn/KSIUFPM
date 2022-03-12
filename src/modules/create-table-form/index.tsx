@@ -5,18 +5,22 @@ import { NeonInput } from '../../components/neon-input';
 import { NumericInput } from '../../components/numeric-input';
 import { RangePicker } from '../../components/range-picker';
 import { SelectOption } from '../../components/select-option';
-import { StepType, TableFormData } from './model';
 
 import fs from 'fs';
 import path from 'path';
 import { app } from '@electron/remote';
 import { useRouter } from '../../context/router';
 import { toast } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
+import { loadTables } from '../prediction-table/predictionTableActions';
+import { getPredictionTables } from '../prediction-table/predictionTableReducer';
+import { PredictionTable, StepType } from '../prediction-table/model';
 
 const CreateTableForm = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
 
-  const data = React.useRef<TableFormData>({
+  const data = React.useRef<PredictionTable>({
     name: '',
     description: '',
     tags: '',
@@ -26,13 +30,11 @@ const CreateTableForm = () => {
     step: { type: 'days', value: 1 },
   });
 
-  const [template, setTemplate] = React.useState<TableFormData>(
+  const [template, setTemplate] = React.useState<PredictionTable>(
     data.current
   );
 
-  const [templates, setTemplates] = React.useState<TableFormData[]>(
-    []
-  );
+  const tables = useSelector(getPredictionTables);
 
   const commonInputAttributes = React.useMemo(
     () => ({
@@ -82,42 +84,11 @@ const CreateTableForm = () => {
   React.useEffect(() => {
     const basePath = path.join(app.getAppPath(), 'tables');
 
-    const loadTemplates = () => {
-      fs.readdir(basePath, (err, files) => {
-        if (err) return;
+    dispatch(loadTables());
 
-        Promise.all(
-          files.map(
-            (file) =>
-              new Promise((res) => {
-                fs.readFile(
-                  path.join(basePath, file),
-                  { encoding: 'utf-8' },
-                  (err, data) => {
-                    if (err) res([]);
-                    else {
-                      const json = JSON.parse(data);
-                      res({
-                        ...json,
-                        startDate: json.startDate
-                          ? new Date(json.startDate)
-                          : null,
-                        endDate: json.endDate
-                          ? new Date(json.endDate)
-                          : null,
-                      });
-                    }
-                  }
-                );
-              })
-          )
-        ).then((templates) => setTemplates(templates as any));
-      });
-    };
-
-    //loadTemplates();
-
-    const watcher = fs.watch(basePath, {}, loadTemplates);
+    const watcher = fs.watch(basePath, {}, () =>
+      dispatch(loadTables())
+    );
 
     return () => watcher.close();
   }, []);
@@ -230,7 +201,7 @@ const CreateTableForm = () => {
             <CreateTableForm.ListContainer>
               <CreateTableForm.List>
                 <CreateTableForm.ListScroller>
-                  {Array.from(templates, (t, idx) => (
+                  {Array.from(tables, (t, idx) => (
                     <div
                       onClick={() => setTemplate(t)}
                       key={t.name + idx}

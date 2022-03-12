@@ -1,9 +1,21 @@
+import { createLDAction } from '../../store/middlewares/localDataLoader';
+import { PredictionTable } from './model';
+
 export const namespace = 'PREDICTION_TABLE';
 
-export const SET_DATA = `${namespace}/SET_DATA` as const;
+export const LOAD_TABLES = `${namespace}/LOAD_TABLES` as const;
+export const POPULATE_TABLES =
+  `${namespace}/POPULATE_TABLES` as const;
+
+export const loadTables = () =>
+  createLDAction(LOAD_TABLES, { path: 'tables' });
+
+export const populateTables = (payload: PredictionTable[]) => ({
+  type: POPULATE_TABLES,
+  payload,
+});
 
 export const predictionTableActions = {
-  setData(payload: number) {
-    return { type: SET_DATA, payload };
-  },
+  loadTables,
+  populateTables,
 };

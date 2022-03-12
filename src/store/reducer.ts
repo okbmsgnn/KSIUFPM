@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
-import { predictionTableReducer as predictionTable } from '../modules/prediction-table/predictionTableReducer';
+import * as predictionTable from '../modules/prediction-table/predictionTableReducer';
 
 const rootReducer = combineReducers({
-  predictionTable,
+  [predictionTable.STATE_KEY]: predictionTable.predictionTableReducer,
 });
 
 export { rootReducer };
