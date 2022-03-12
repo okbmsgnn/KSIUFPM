@@ -1,13 +1,28 @@
 import React from 'react';
+import { Provider as StoreProvider } from 'react-redux';
+import { ToastContainer, toast } from 'react-toastify';
 import styled from 'styled-components';
 import { CreateTableForm } from './modules/create-table-form';
+import { store } from './store';
+
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
+  React.useEffect(() => {
+    toast.error('Error');
+  }, []);
+
   return (
-    <App.Container>
-      asdaasdsasdasda
-      <CreateTableForm />
-    </App.Container>
+    <StoreProvider store={store}>
+      <>
+        <App.Container>
+          asdaasdsasdasda
+          <CreateTableForm />
+        </App.Container>
+
+        <ToastContainer autoClose={3000} position="top-right" />
+      </>
+    </StoreProvider>
   );
 };
 

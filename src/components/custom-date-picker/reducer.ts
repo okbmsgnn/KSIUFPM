@@ -28,25 +28,25 @@ export const customDatePickerReducer: React.Reducer<
     case SET_VIEW: {
       return {
         ...state,
-        view: action.payload as TimeView,
+        view: action.payload,
       };
     }
     case SET_ITEMS: {
       return {
         ...state,
-        items: action.payload as TimeData,
+        items: action.payload,
       };
     }
     case SET_SELECTED_DATE: {
       return {
         ...state,
-        selectedDate: action.payload as Date,
+        selectedDate: action.payload,
       };
     }
     case SET_PAGE_OFFSET: {
       return {
         ...state,
-        pageOffset: action.payload as number,
+        pageOffset: action.payload,
       };
     }
     default:

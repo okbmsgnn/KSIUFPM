@@ -2,10 +2,12 @@ import { TimeData, TimeView } from './model';
 
 const namespace = '@customDatePicker';
 
-export const SET_VIEW = `${namespace}/SET_VIEW`;
-export const SET_ITEMS = `${namespace}/SET_ITEMS`;
-export const SET_SELECTED_DATE = `${namespace}/SET_SELECTED_DATE`;
-export const SET_PAGE_OFFSET = `${namespace}/SET_PAGE_OFFSET`;
+export const SET_VIEW = `${namespace}/SET_VIEW` as const;
+export const SET_ITEMS = `${namespace}/SET_ITEMS` as const;
+export const SET_SELECTED_DATE =
+  `${namespace}/SET_SELECTED_DATE` as const;
+export const SET_PAGE_OFFSET =
+  `${namespace}/SET_PAGE_OFFSET` as const;
 
 export const customDatePickerActions = {
   setView: (payload: TimeView) => ({

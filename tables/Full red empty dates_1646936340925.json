@@ -1,0 +1,17 @@
+{
+    "name": "Full red empty dates",
+    "description": "NONE",
+    "tags": "tag1 tag2",
+    "startDate": null,
+    "endDate": null,
+    "colorPalette": [
+        "#ff0000",
+        "#ff0000",
+        "#ff0000",
+        "#f50000"
+    ],
+    "step": {
+        "type": "hours",
+        "value": 3
+    }
+}

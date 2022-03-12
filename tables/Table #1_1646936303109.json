@@ -1,0 +1,17 @@
+{
+    "name": "Table #1",
+    "description": "NONE",
+    "tags": "tag1 tag2",
+    "startDate": "2022-03-02T00:00:00.000Z",
+    "endDate": "2022-03-26T00:00:00.000Z",
+    "colorPalette": [
+        "#ff0000",
+        "#000000",
+        "#005eff",
+        "#ffffff"
+    ],
+    "step": {
+        "type": "hours",
+        "value": 3
+    }
+}
