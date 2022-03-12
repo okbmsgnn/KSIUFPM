@@ -10,8 +10,12 @@ import { StepType, TableFormData } from './model';
 import fs from 'fs';
 import path from 'path';
 import { app } from '@electron/remote';
+import { useRouter } from '../../context/router';
+import { toast } from 'react-toastify';
 
 const CreateTableForm = () => {
+  const router = useRouter();
+
   const data = React.useRef<TableFormData>({
     name: '',
     description: '',
@@ -61,7 +65,13 @@ const CreateTableForm = () => {
       ),
       JSON.stringify(data.current, null, 4),
       { encoding: 'utf-8' },
-      (error) => error && alert(error.message)
+      (error) => {
+        if (error) {
+          toast(error);
+        } else {
+          router.redirectTo('/workspace');
+        }
+      }
     );
   }, []);
 
@@ -105,7 +115,7 @@ const CreateTableForm = () => {
       });
     };
 
-    loadTemplates();
+    //loadTemplates();
 
     const watcher = fs.watch(basePath, {}, loadTemplates);
 
@@ -220,8 +230,11 @@ const CreateTableForm = () => {
             <CreateTableForm.ListContainer>
               <CreateTableForm.List>
                 <CreateTableForm.ListScroller>
-                  {Array.from(templates, (t) => (
-                    <div onClick={() => setTemplate(t)}>
+                  {Array.from(templates, (t, idx) => (
+                    <div
+                      onClick={() => setTemplate(t)}
+                      key={t.name + idx}
+                    >
                       {t.name ? t.name : '<empty_name>'}
                     </div>
                   ))}

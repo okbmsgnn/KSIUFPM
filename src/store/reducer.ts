@@ -1,14 +1,8 @@
 import { combineReducers } from 'redux';
+import { predictionTableReducer as predictionTable } from '../modules/prediction-table/predictionTableReducer';
 
 const rootReducer = combineReducers({
-  some: (state = { test: 2 }, action) => {
-    switch (action.type) {
-      case 'test':
-        throw new Error('Kekma');
-      default:
-        return state;
-    }
-  },
+  predictionTable,
 });
 
 export { rootReducer };

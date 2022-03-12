@@ -1,0 +1,17 @@
+{
+    "name": "New table",
+    "description": "test description",
+    "tags": "wtf",
+    "startDate": "2022-03-14T00:00:00.000Z",
+    "endDate": "2022-03-04T00:00:00.000Z",
+    "colorPalette": [
+        "#00ddff",
+        "#5eff00",
+        "#005eff",
+        "#2f00ff"
+    ],
+    "step": {
+        "type": "months",
+        "value": 12
+    }
+}
