@@ -55,6 +55,5 @@ export const loggerMiddleware: Middleware =
 
     console.groupEnd();
 
-    if (error) throw error;
-    else return result;
+    return result;
   };

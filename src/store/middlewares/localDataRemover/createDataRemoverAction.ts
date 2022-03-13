@@ -4,9 +4,12 @@ type DRPayload = {
   path: string;
 };
 
-export const createDataRemoverAction = <T = string>(
+export const createDataRemoverAction = <
+  P extends { [key: string]: any },
+  T = string
+>(
   type: T,
-  payload: DRPayload
+  payload: DRPayload & P
 ) => {
   const meta = {
     type: REMOVE_LOCAL_DATA,

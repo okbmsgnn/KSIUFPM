@@ -7,6 +7,8 @@ import {
 export const MESSAGE = {
   TABLE_CREATION_SUCCESS: 'Table created!',
   TABLE_CREATION_FAIL: 'Failed to create a table!',
+  TABLE_DELETION_SUCCESS: 'Table deleted!',
+  TABLE_DELETION_FAIL: 'Failed to delete a table!',
 };
 
 export type StepType = 'hours' | 'days' | 'month';

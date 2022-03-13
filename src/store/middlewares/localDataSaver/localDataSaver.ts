@@ -17,24 +17,26 @@ export const localDataSaverMiddleware: Middleware =
       : path.join(app.getAppPath(), action.payload.path);
 
     const save = async () => {
-      await writeFileAsync(
-        targetPath,
-        JSON.stringify(action.payload.data, null, 2)
-      );
+      try {
+        await writeFileAsync(
+          targetPath,
+          JSON.stringify(action.payload.data, null, 2)
+        );
 
-      store.dispatch({
-        type: `${action.type}_SUCCESS`,
-        previousAction: action,
-      });
+        store.dispatch({
+          type: `${action.type}_SUCCESS`,
+          previousAction: action,
+        });
+      } catch (e) {
+        store.dispatch({
+          type: `${action.type}_FAIL`,
+          previousAction: action,
+          error: e,
+        });
+      }
     };
 
-    save().catch((e) => {
-      store.dispatch({
-        type: `${action.type}_FAIL`,
-        previousAction: action,
-        error: e,
-      });
-    });
+    save();
 
     return result;
   };

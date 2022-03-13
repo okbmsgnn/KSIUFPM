@@ -2,6 +2,7 @@ import { PredictionTableDraft } from '../prediction-table/model';
 
 export const DEFAULT_TABLE_TEMPLATE: PredictionTableDraft = {
   name: '',
+  localName: '',
   description: '',
   tags: '',
   startDate: null,

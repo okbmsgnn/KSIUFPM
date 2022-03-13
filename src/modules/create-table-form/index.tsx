@@ -15,6 +15,7 @@ import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   createTable,
+  deleteTable,
   loadTables,
 } from '../prediction-table/predictionTableActions';
 import {
@@ -205,7 +206,11 @@ const CreateTableForm = () => {
                 <CreateTableForm.ListScroller>
                   {tables.map((t, idx) => (
                     <div
-                      onClick={() => setData(t)}
+                      onMouseDown={(e) => {
+                        if (e.button === 0) setData(t);
+                        else if (e.button === 2)
+                          dispatch(deleteTable(t));
+                      }}
                       key={t.name + idx}
                     >
                       {t.name ? t.name : '<empty_name>'}

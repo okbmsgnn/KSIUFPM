@@ -5,7 +5,7 @@ import {
   CREATE_TABLE,
   DELETE_TABLE,
   LOAD_TABLES,
-  SET_TABLE_CREATION_STATUS,
+  SET_TABLE_STATUS,
 } from './predictionTableActions';
 
 export const STATE_KEY = 'predictionTable';
@@ -26,10 +26,18 @@ export const predictionTableReducer: Reducer<
         tables: state.tables.concat([action.payload.data]),
       };
     }
+    case DELETE_TABLE: {
+      return {
+        ...state,
+        tables: state.tables.filter(
+          (t) => t.id !== action.payload.table.id
+        ),
+      };
+    }
     case `${LOAD_TABLES}_SUCCESS` as const:
       return { ...state, tables: action.payload };
-    case SET_TABLE_CREATION_STATUS:
-      return { ...state, tableCreationStatus: action.payload };
+    case SET_TABLE_STATUS:
+      return { ...state, tableStatus: action.payload };
     default:
       return state;
   }

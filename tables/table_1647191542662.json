@@ -1,0 +1,20 @@
+{
+  "name": "",
+  "localName": "",
+  "description": "",
+  "tags": "",
+  "startDate": null,
+  "endDate": null,
+  "colorPalette": [
+    "#b0f4ff",
+    "#d7ffbf",
+    "#86aff7",
+    "#9a86f7"
+  ],
+  "step": {
+    "type": "days",
+    "value": 1
+  },
+  "createdAt": "2022-03-13T17:12:22.662Z",
+  "id": "b76f6f93-0434-4429-b652-00425788f7a7"
+}

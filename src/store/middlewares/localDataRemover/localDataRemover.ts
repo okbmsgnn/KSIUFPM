@@ -19,22 +19,24 @@ export const localDataRemoverMiddleware: Middleware =
       ? action.payload.path
       : path.join(app.getAppPath(), action.payload.path);
 
-    const remove = async () => {
-      await removeAsync(targetPath);
+    const load = async () => {
+      try {
+        await removeAsync(targetPath);
 
-      store.dispatch({
-        type: `${action.type}_SUCCESS`,
-        previousAction: action,
-      });
+        store.dispatch({
+          type: `${action.type}_SUCCESS`,
+          previousAction: action,
+        });
+      } catch (e) {
+        store.dispatch({
+          type: `${action.type}_FAIL`,
+          previousAction: action,
+          error: e,
+        });
+      }
     };
 
-    remove().catch((e) => {
-      store.dispatch({
-        type: `${action.type}_FAIL`,
-        previousAction: action,
-        error: e,
-      });
-    });
+    load();
 
     return result;
   };
