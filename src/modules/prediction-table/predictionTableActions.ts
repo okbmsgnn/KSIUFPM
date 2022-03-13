@@ -1,7 +1,9 @@
 import path from 'path';
 import { createDataLoaderAction } from '../../store/middlewares/localDataLoader';
+import { createDataRemoverAction } from '../../store/middlewares/localDataRemover';
 import { createDataSaverAction } from '../../store/middlewares/localDataSaver';
 import { PredictionTable, TableStatus } from './model';
+import { predictionTableDeserializer } from './utils/predictionTableDeserializer';
 
 export const namespace = 'PREDICTION_TABLE';
 
@@ -10,11 +12,12 @@ export const CREATE_TABLE = `${namespace}/CREATE_TABLE` as const;
 export const DELETE_TABLE = `${namespace}/DELETE_TABLE` as const;
 export const SET_TABLE_CREATION_STATUS =
   `${namespace}/SET_TABLE_CREATION_STATUS` as const;
-export const POPULATE_TABLES =
-  `${namespace}/POPULATE_TABLES` as const;
 
 export const loadTables = () =>
-  createDataLoaderAction(LOAD_TABLES, { path: 'tables' });
+  createDataLoaderAction(LOAD_TABLES, {
+    path: 'tables',
+    deserialize: predictionTableDeserializer,
+  });
 
 export const createTable = (payload: PredictionTable) =>
   createDataSaverAction(CREATE_TABLE, {
@@ -25,15 +28,10 @@ export const createTable = (payload: PredictionTable) =>
     data: payload,
   });
 
-export const deleteTable = (payload: string) => ({
-  type: DELETE_TABLE,
-  payload,
-});
-
-export const populateTables = (payload: PredictionTable[]) => ({
-  type: POPULATE_TABLES,
-  payload,
-});
+export const deleteTable = (table: PredictionTable) =>
+  createDataRemoverAction(DELETE_TABLE, {
+    path: path.join('tables', table.localName),
+  });
 
 export const setTableCreationStatus = (payload: TableStatus) => ({
   type: SET_TABLE_CREATION_STATUS,
@@ -42,7 +40,6 @@ export const setTableCreationStatus = (payload: TableStatus) => ({
 
 export const predictionTableActions = {
   loadTables,
-  populateTables,
   createTable,
   deleteTable,
   setTableCreationStatus,

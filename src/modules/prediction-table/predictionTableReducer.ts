@@ -4,7 +4,7 @@ import { PredictionTableAction, PredictionTableState } from './model';
 import {
   CREATE_TABLE,
   DELETE_TABLE,
-  POPULATE_TABLES,
+  LOAD_TABLES,
   SET_TABLE_CREATION_STATUS,
 } from './predictionTableActions';
 
@@ -12,7 +12,7 @@ export const STATE_KEY = 'predictionTable';
 
 const initialState: PredictionTableState = {
   tables: [],
-  tableCreationStatus: null,
+  tableStatus: null,
 };
 
 export const predictionTableReducer: Reducer<
@@ -26,15 +26,8 @@ export const predictionTableReducer: Reducer<
         tables: state.tables.concat([action.payload.data]),
       };
     }
-    case DELETE_TABLE: {
-      return {
-        ...state,
-        tables: state.tables.filter((t) => t.id !== action.payload),
-      };
-    }
-    case POPULATE_TABLES: {
+    case `${LOAD_TABLES}_SUCCESS` as const:
       return { ...state, tables: action.payload };
-    }
     case SET_TABLE_CREATION_STATUS:
       return { ...state, tableCreationStatus: action.payload };
     default:
@@ -58,7 +51,7 @@ export const getSortedPredictionTables = createSelector(
     )
 );
 
-export const getCreationStatus = createSelector(
+export const getStatus = createSelector(
   getState,
-  (state) => state.tableCreationStatus
+  (state) => state.tableStatus
 );

@@ -1,5 +1,8 @@
 import { InferActionCreatorsTypes } from '../../utils/types';
-import { predictionTableActions } from './predictionTableActions';
+import {
+  LOAD_TABLES,
+  predictionTableActions,
+} from './predictionTableActions';
 
 export const MESSAGE = {
   TABLE_CREATION_SUCCESS: 'Table created!',
@@ -12,6 +15,7 @@ export type PredictionTable = {
   id: string;
   createdAt: Date;
   name: string;
+  localName: string;
   description: string;
   tags: string;
   startDate: Date | null;
@@ -25,9 +29,12 @@ export type PredictionTableDraft = Omit<
   'id' | 'createdAt'
 >;
 
-export type PredictionTableAction = InferActionCreatorsTypes<
-  typeof predictionTableActions
->;
+export type PredictionTableAction =
+  | InferActionCreatorsTypes<typeof predictionTableActions>
+  | {
+      type: `${typeof LOAD_TABLES}_SUCCESS`;
+      payload: PredictionTable[];
+    };
 
 export type TableStatus = {
   success: boolean;
@@ -36,5 +43,5 @@ export type TableStatus = {
 
 export type PredictionTableState = {
   tables: PredictionTable[];
-  tableCreationStatus: TableStatus | null;
+  tableStatus: TableStatus | null;
 };

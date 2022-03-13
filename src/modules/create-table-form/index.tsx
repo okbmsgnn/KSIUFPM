@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import debounce from 'lodash.debounce';
-import clonedeep from 'lodash.clonedeep';
 import { ColorPicker } from '../../components/color-picker';
 import { NeonInput } from '../../components/neon-input';
 import { NumericInput } from '../../components/numeric-input';
@@ -19,7 +18,7 @@ import {
   loadTables,
 } from '../prediction-table/predictionTableActions';
 import {
-  getCreationStatus,
+  getStatus,
   getSortedPredictionTables,
 } from '../prediction-table/predictionTableReducer';
 import { DEFAULT_TABLE_TEMPLATE } from './model';
@@ -47,7 +46,7 @@ const CreateTableForm = () => {
   );
 
   const tables = useSelector(getSortedPredictionTables);
-  const creationStatus = useSelector(getCreationStatus);
+  const status = useSelector(getStatus);
 
   const getColorPickerProps = React.useCallback(
     (idx: number) => ({
@@ -87,14 +86,12 @@ const CreateTableForm = () => {
   }, []);
 
   React.useEffect(() => {
-    if (!creationStatus) return;
+    if (!status) return;
 
-    const notify = creationStatus.success
-      ? toast.success
-      : toast.error;
+    const notify = status.success ? toast.success : toast.error;
 
-    notify(creationStatus.description);
-  }, [creationStatus]);
+    notify(status.description);
+  }, [status]);
 
   return (
     <CreateTableForm.Background>

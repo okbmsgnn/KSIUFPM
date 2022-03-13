@@ -24,19 +24,36 @@ export const localDataLoaderMiddleware: Middleware =
 
     const load = async () => {
       const stats = await stat(targetPath);
-      let data: string | string[] | undefined = undefined;
+      let data: { filename: string; filedata: string }[] | undefined =
+        undefined;
 
       if (stats.isFile()) {
-        data = [await readFileAsync(targetPath)];
+        const filename =
+          /[^\\/]+$/.exec(targetPath)?.at(0) ?? '__UNKNOWN__';
+        const filedata = await readFileAsync(targetPath);
+        data = [{ filename, filedata }];
       } else if (stats.isDirectory()) {
         const files = await readDirAsync(targetPath);
         const paths = files.map((f) => path.join(targetPath, f));
-        data = await readFilesAsync(paths);
+        const filedata = await readFilesAsync(paths);
+        data = files.map((filename, idx) => ({
+          filename,
+          filedata: filedata[idx],
+        }));
       }
 
       if (data === undefined) throw new Error('Something went wrong');
 
-      const deserializedData = data.map((d) => JSON.parse(d));
+      const deserialize = (filename: string, data: string) => {
+        if (action.payload.deserialize)
+          return action.payload.deserialize(filename, data);
+
+        return JSON.parse(data);
+      };
+
+      const deserializedData = data.map((d) =>
+        deserialize(d.filename, d.filedata)
+      );
 
       store.dispatch({
         type: `${action.type}_SUCCESS`,
