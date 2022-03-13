@@ -1,2 +1,2 @@
-export { createLDAction } from './createLDAction';
-export { localDataLoaderMiddleware } from './localDataLoaderMiddleware';
+export { createDataLoaderAction } from './createDataLoaderAction';
+export { localDataLoaderMiddleware } from './localDataLoader';

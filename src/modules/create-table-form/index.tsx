@@ -1,5 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
+import debounce from 'lodash.debounce';
+import clonedeep from 'lodash.clonedeep';
 import { ColorPicker } from '../../components/color-picker';
 import { NeonInput } from '../../components/neon-input';
 import { NumericInput } from '../../components/numeric-input';
@@ -12,86 +14,87 @@ import { app } from '@electron/remote';
 import { useRouter } from '../../context/router';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
-import { loadTables } from '../prediction-table/predictionTableActions';
-import { getPredictionTables } from '../prediction-table/predictionTableReducer';
-import { PredictionTable, StepType } from '../prediction-table/model';
+import {
+  createTable,
+  loadTables,
+} from '../prediction-table/predictionTableActions';
+import {
+  getCreationStatus,
+  getSortedPredictionTables,
+} from '../prediction-table/predictionTableReducer';
+import { DEFAULT_TABLE_TEMPLATE } from './model';
+import { generatePredictionTable } from '../prediction-table/utils/generatePredictionTable';
+
+const commonInputAttributes = {
+  backdropColor: '#444',
+  glowColor: 'aqua',
+  border: {
+    activeColor: '#fff',
+    defaultColor: '#777',
+  },
+};
 
 const CreateTableForm = () => {
-  const router = useRouter();
+  //const router = useRouter();
   const dispatch = useDispatch();
 
-  const data = React.useRef<PredictionTable>({
-    name: '',
-    description: '',
-    tags: '',
-    startDate: null,
-    endDate: null,
-    colorPalette: ['#b0f4ff', '#d7ffbf', '#86aff7', '#9a86f7'],
-    step: { type: 'days', value: 1 },
-  });
-
-  const [template, setTemplate] = React.useState<PredictionTable>(
-    data.current
-  );
-
-  const tables = useSelector(getPredictionTables);
-
-  const commonInputAttributes = React.useMemo(
-    () => ({
-      backdropColor: '#444',
-      glowColor: 'aqua',
-      border: {
-        activeColor: '#fff',
-        defaultColor: '#777',
-      },
-    }),
+  const [data, setData] = React.useState(DEFAULT_TABLE_TEMPLATE);
+  const setDataParam = React.useCallback(
+    (key: string, value: any) => {
+      setData((prev) => ({ ...prev, [key]: value }));
+    },
     []
   );
+
+  const tables = useSelector(getSortedPredictionTables);
+  const creationStatus = useSelector(getCreationStatus);
 
   const getColorPickerProps = React.useCallback(
     (idx: number) => ({
       size: 15,
-      value: template.colorPalette[idx],
+      value: data.colorPalette[idx],
       onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-        (template.colorPalette[idx] = e.target.value),
+        setDataParam(
+          'colorPalette',
+          data.colorPalette.map((color, i) =>
+            i === idx ? e.target.value : color
+          )
+        ),
     }),
-    [template]
+    [data]
   );
 
   const onSubmit = React.useCallback(() => {
-    fs.writeFile(
-      path.join(
-        app.getAppPath(),
-        'tables',
-        `${data.current.name}_${Date.now()}.json`
-      ),
-      JSON.stringify(data.current, null, 4),
-      { encoding: 'utf-8' },
-      (error) => {
-        if (error) {
-          toast(error);
-        } else {
-          router.redirectTo('/workspace');
-        }
-      }
-    );
-  }, []);
+    const newTable = generatePredictionTable(data);
+    dispatch(createTable(newTable));
+  }, [data]);
 
-  React.useEffect(() => {
-    data.current = template;
-  }, [template]);
+  const loadTablesDebounce = React.useMemo(
+    () => debounce(() => dispatch(loadTables()), 500),
+    []
+  );
 
   React.useEffect(() => {
     const basePath = path.join(app.getAppPath(), 'tables');
 
     dispatch(loadTables());
 
-    const watcher = fs.watch(basePath, {}, () =>
-      dispatch(loadTables())
-    );
+    const watcher = fs.watch(basePath, {}, (r, s) => {
+      loadTablesDebounce();
+    });
 
     return () => watcher.close();
   }, []);
+
+  React.useEffect(() => {
+    if (!creationStatus) return;
+
+    const notify = creationStatus.success
+      ? toast.success
+      : toast.error;
+
+    notify(creationStatus.description);
+  }, [creationStatus]);
 
   return (
     <CreateTableForm.Background>
@@ -106,24 +109,24 @@ const CreateTableForm = () => {
               <NeonInput
                 {...commonInputAttributes}
                 placeholder="Table name"
-                onChange={(e) => (data.current.name = e.target.value)}
-                value={template.name}
+                onChange={(e) => setDataParam('name', e.target.value)}
+                value={data.name}
               />
 
               <NeonInput
                 {...commonInputAttributes}
                 placeholder="Table description"
                 onChange={(e) =>
-                  (data.current.description = e.target.value)
+                  setDataParam('description', e.target.value)
                 }
-                value={template.description}
+                value={data.description}
               />
 
               <NeonInput
                 {...commonInputAttributes}
                 placeholder="Table tags"
-                onChange={(e) => (data.current.tags = e.target.value)}
-                value={template.tags}
+                onChange={(e) => setDataParam('tags', e.target.value)}
+                value={data.tags}
               />
             </CreateTableForm.InputContainer>
 
@@ -137,13 +140,13 @@ const CreateTableForm = () => {
                   <div>Date Interval</div>
 
                   <RangePicker
-                    startDate={template.startDate}
-                    endDate={template.endDate}
+                    startDate={data.startDate}
+                    endDate={data.endDate}
                     onStartDateSelect={(date) =>
-                      (template.startDate = date)
+                      setDataParam('startDate', date)
                     }
                     onEndDateSelect={(date) =>
-                      (template.endDate = date)
+                      setDataParam('endDate', date)
                     }
                   />
                 </CreateTableForm.AdvancedSettingRow>
@@ -164,10 +167,12 @@ const CreateTableForm = () => {
 
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <SelectOption
-                      value={template.step.type}
+                      value={data.step.type}
                       onChange={(e) =>
-                        (data.current.step.type = e.target
-                          .value as StepType)
+                        setDataParam('step', {
+                          ...data.step,
+                          type: e.target.value,
+                        })
                       }
                     >
                       <option value="hours">Hours</option>
@@ -176,13 +181,13 @@ const CreateTableForm = () => {
                     </SelectOption>
 
                     <NumericInput
-                      type="number"
                       min={1}
-                      value={template.step.value}
+                      value={data.step.value}
                       onChange={(e) =>
-                        (data.current.step.value = Number(
-                          e.target.value
-                        ))
+                        setDataParam('step', {
+                          ...data.step,
+                          value: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -201,9 +206,9 @@ const CreateTableForm = () => {
             <CreateTableForm.ListContainer>
               <CreateTableForm.List>
                 <CreateTableForm.ListScroller>
-                  {Array.from(tables, (t, idx) => (
+                  {tables.map((t, idx) => (
                     <div
-                      onClick={() => setTemplate(t)}
+                      onClick={() => setData(t)}
                       key={t.name + idx}
                     >
                       {t.name ? t.name : '<empty_name>'}

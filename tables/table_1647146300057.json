@@ -1,0 +1,19 @@
+{
+  "name": "Table #45",
+  "description": "test description",
+  "tags": "",
+  "startDate": "2022-03-15T00:00:00.000Z",
+  "endDate": null,
+  "colorPalette": [
+    "#ff0000",
+    "#d7ffbf",
+    "#005eff",
+    "#9a86f7"
+  ],
+  "step": {
+    "type": "days",
+    "value": 1
+  },
+  "createdAt": "2022-03-13T04:38:20.057Z",
+  "id": "506437f8-996b-4217-8ff1-a10a42185ad1"
+}

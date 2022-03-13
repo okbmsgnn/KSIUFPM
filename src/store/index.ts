@@ -1,5 +1,6 @@
 import { applyMiddleware, createStore } from 'redux';
 import { localDataLoaderMiddleware } from './middlewares/localDataLoader';
+import { localDataSaverMiddleware } from './middlewares/localDataSaver';
 import { loggerMiddleware } from './middlewares/logger';
 import { sagaMiddleware } from './middlewares/saga';
 import { rootReducer } from './reducer';
@@ -10,7 +11,8 @@ const store = createStore(
   applyMiddleware(
     sagaMiddleware,
     loggerMiddleware,
-    localDataLoaderMiddleware
+    localDataLoaderMiddleware,
+    localDataSaverMiddleware
   )
 );
 

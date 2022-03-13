@@ -52,6 +52,7 @@ if (env === 'development') {
     require('electron-reloader')(module, {
       debug: true,
       watchRenderer: true,
+      ignore: ['node_modules', /^\./, /^\.map/, /.json$/],
     });
   } catch (_) {
     console.log('Error');

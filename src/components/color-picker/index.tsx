@@ -10,10 +10,8 @@ export const ColorPicker = ({
   size = 40,
   ...props
 }: ColorPickerProps) => {
-  const [color, setColor] = React.useState(props.value ?? '#ffffff');
-
-  React.useEffect(
-    () => setColor(props.value ?? '#ffffff'),
+  const color = React.useMemo(
+    () => props.value ?? '#ffffff',
     [props.value]
   );
 
@@ -24,15 +22,7 @@ export const ColorPicker = ({
       }}
       size={size}
     >
-      <input
-        {...props}
-        type="color"
-        onChange={(e) => {
-          setColor(e.target.value);
-          props.onChange?.call(null, e);
-        }}
-        value={color}
-      />
+      <input {...props} value={color} type="color" />
     </ColorPicker.Container>
   );
 };

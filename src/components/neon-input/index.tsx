@@ -10,6 +10,7 @@ type NeonInputProps = JSX.IntrinsicElements['input'] & {
   backdropColor?: string;
   width?: number;
   onContainerClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  initialValue?: string;
   ref?: any;
 };
 
@@ -19,12 +20,10 @@ const NeonInput = ({
   glowColor = '#fff',
   width,
   onContainerClick,
+  initialValue = '',
   ...props
 }: NeonInputProps) => {
   const [isActive, setIsActive] = React.useState(false);
-  const [value, setValue] = React.useState(props.value);
-
-  React.useEffect(() => setValue(props.value), [props.value]);
 
   return (
     <NeonInput.Container width={width} onClick={onContainerClick}>
@@ -45,11 +44,6 @@ const NeonInput = ({
         borderColor={
           isActive ? border.activeColor : border.defaultColor
         }
-        value={value}
-        onChange={(e) => {
-          setValue(e.target.value);
-          props.onChange?.call(null, e);
-        }}
       />
     </NeonInput.Container>
   );

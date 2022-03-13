@@ -8,7 +8,7 @@ import {
   stat,
 } from '../../../utils/file-system';
 
-import { LDAction, LOAD_LOCAL_DATA } from './createLDAction';
+import { DLAction, LOAD_LOCAL_DATA } from './createDataLoaderAction';
 
 export const localDataLoaderMiddleware: Middleware =
   (store) => (next) => (_action) => {
@@ -16,7 +16,7 @@ export const localDataLoaderMiddleware: Middleware =
 
     if (_action.meta?.type !== LOAD_LOCAL_DATA) return result;
 
-    const action = _action as LDAction;
+    const action = _action as DLAction;
 
     const targetPath = path.isAbsolute(action.payload.path)
       ? action.payload.path
@@ -27,7 +27,7 @@ export const localDataLoaderMiddleware: Middleware =
       let data: string | string[] | undefined = undefined;
 
       if (stats.isFile()) {
-        data = await readFileAsync(targetPath);
+        data = [await readFileAsync(targetPath)];
       } else if (stats.isDirectory()) {
         const files = await readDirAsync(targetPath);
         const paths = files.map((f) => path.join(targetPath, f));
@@ -36,9 +36,11 @@ export const localDataLoaderMiddleware: Middleware =
 
       if (data === undefined) throw new Error('Something went wrong');
 
+      const deserializedData = data.map((d) => JSON.parse(d));
+
       store.dispatch({
         type: `${action.type}_SUCCESS`,
-        payload: data,
+        payload: deserializedData,
         previousAction: action,
       });
     };

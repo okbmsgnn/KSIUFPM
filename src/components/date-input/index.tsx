@@ -31,6 +31,9 @@ export const DateInput = ({
         onClick={() => setIsDatePickerOpen(true)}
         value={date ? timeFormat('%Y/%m/%d')(date) : ''}
         width={100}
+        onChange={(e) => {
+          // TODO
+        }}
       />
 
       {isDatePickerOpen && (
