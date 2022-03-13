@@ -1,4 +1,3 @@
-import React from 'react';
 import { useRouter } from './useRouter';
 
 interface RouteProps {

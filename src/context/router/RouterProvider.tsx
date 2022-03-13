@@ -1,6 +1,5 @@
 import React from 'react';
 import { RouterContext, RouterContextProps } from './RouterContext';
-import { Route } from './Route';
 
 interface RouterProviderProps {
   children: React.ReactNode;

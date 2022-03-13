@@ -1,12 +1,7 @@
 module.exports = {
-  extends: [
-    'react-app',
-    'plugin:import/errors',
-    'plugin:import/warnings',
-    'plugin:prettier/recommended',
-  ],
+  extends: ['react-app'],
   ignorePatterns: ['**/public/scripts/*.js'],
-  plugins: ['fp', 'import', 'ramda', 'react-hooks'],
+  plugins: ['import', 'react-hooks'],
   overrides: [
     {
       files: ['*.ts', '*.tsx'],
@@ -23,7 +18,7 @@ module.exports = {
   ],
   rules: {
     // General
-    'comma-dangle': ['warn', 'always-multiline'],
+    //'comma-dangle': ['warn', 'always-multiline'],
     'import/no-named-as-default': 0,
     'global-require': 'warn',
     'key-spacing': 'off',
@@ -33,31 +28,12 @@ module.exports = {
     'no-underscore-dangle': 'off',
     'no-var': 'error',
     'no-unused-vars': 'warn',
-    'no-console': 'warn',
     'no-redeclare': 'off',
     'import/no-unresolved': 'off',
     // React hooks
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'off',
 
-    // FP
-    'fp/no-arguments': 'error',
-    'fp/no-class': 'off',
-    'fp/no-delete': 'error',
-    'fp/no-events': 'error',
-    'fp/no-get-set': 'error',
-    'fp/no-let': 'off',
-    'fp/no-loops': 'off',
-    'fp/no-mutating-assign': 'error',
-    'fp/no-mutating-methods': 'off',
-    'fp/no-mutation': 'off',
-    'fp/no-nil': 'off',
-    'fp/no-proxy': 'error',
-    'fp/no-rest-parameters': 'off',
-    'fp/no-this': 'off',
-    'fp/no-throw': 'off',
-    'fp/no-unused-expression': 'off',
-    'fp/no-valueof-field': 'error',
     // Import
     'import/named': 'off',
   },

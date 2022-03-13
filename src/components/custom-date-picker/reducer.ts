@@ -8,7 +8,6 @@ import {
 import {
   CustomDatePickerAction,
   CustomDatePickerState,
-  TimeData,
   TimeView,
 } from './model';
 

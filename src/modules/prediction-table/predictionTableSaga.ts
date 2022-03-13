@@ -1,22 +1,18 @@
 import { all, put, takeLatest } from 'redux-saga/effects';
-import { PredictionTable } from './model';
 import {
   LOAD_TABLES,
-  predictionTableActions,
+  populateTables,
 } from './predictionTableActions';
+import { normalizePredictionTables } from './utils/normalizePredictionTables';
 
 function* normalizeTablesSaga(action: any) {
   const data = action.payload;
 
-  const tables: PredictionTable[] = [];
+  const tables = normalizePredictionTables(
+    Array.isArray(data) ? data : [data]
+  );
 
-  if (Array.isArray(data)) {
-    tables.push(...data.map((d) => JSON.parse(d)));
-  } else {
-    tables.push(JSON.parse(data));
-  }
-
-  yield put(predictionTableActions.populateTables(tables));
+  yield put(populateTables(tables));
 }
 
 export function* predictionTableSagas() {
