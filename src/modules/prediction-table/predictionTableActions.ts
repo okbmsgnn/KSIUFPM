@@ -34,7 +34,7 @@ export const deleteTable = (payload: PredictionTable) =>
     table: payload,
   });
 
-export const setTableStatus = (payload: TableStatus) => ({
+export const setTableStatus = (payload: TableStatus | null) => ({
   type: SET_TABLE_STATUS,
   payload,
 });

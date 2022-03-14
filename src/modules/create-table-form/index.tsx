@@ -17,6 +17,7 @@ import {
   createTable,
   deleteTable,
   loadTables,
+  setTableStatus,
 } from '../prediction-table/predictionTableActions';
 import {
   getStatus,
@@ -35,7 +36,7 @@ const commonInputAttributes = {
 };
 
 const CreateTableForm = () => {
-  //const router = useRouter();
+  const router = useRouter();
   const dispatch = useDispatch();
 
   const [data, setData] = React.useState(DEFAULT_TABLE_TEMPLATE);
@@ -47,7 +48,6 @@ const CreateTableForm = () => {
   );
 
   const tables = useSelector(getSortedPredictionTables);
-  const status = useSelector(getStatus);
 
   const getColorPickerProps = React.useCallback(
     (idx: number) => ({
@@ -64,9 +64,10 @@ const CreateTableForm = () => {
     [data]
   );
 
-  const onSubmit = React.useCallback(() => {
+  const onSubmit = React.useCallback(async () => {
     const newTable = generatePredictionTable(data);
-    dispatch(createTable(newTable));
+    await dispatch(createTable(newTable));
+    router.redirectTo('workspace');
   }, [data]);
 
   const loadTablesDebounce = React.useMemo(
@@ -85,14 +86,6 @@ const CreateTableForm = () => {
 
     return () => watcher.close();
   }, []);
-
-  React.useEffect(() => {
-    if (!status) return;
-
-    const notify = status.success ? toast.success : toast.error;
-
-    notify(status.description);
-  }, [status]);
 
   return (
     <CreateTableForm.Background>

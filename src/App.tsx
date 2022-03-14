@@ -1,30 +1,40 @@
-import { Provider as StoreProvider } from 'react-redux';
-import { ToastContainer } from 'react-toastify';
+import { useSelector } from 'react-redux';
+import { toast, ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
 import { CreateTableForm } from './modules/create-table-form';
-import { store } from './store';
 
 import 'react-toastify/dist/ReactToastify.min.css';
 import { Route, RouterProvider } from './context/router';
 import { Workspace } from './modules/workspace';
+import { getStatus } from './modules/prediction-table/predictionTableReducer';
+import React from 'react';
 
 const App = () => {
+  const status = useSelector(getStatus);
+
+  React.useEffect(() => {
+    console.log(JSON.stringify(status));
+    if (!status) return;
+
+    const notify = status.success ? toast.success : toast.error;
+
+    notify(status.description);
+  }, [status]);
+
   return (
-    <StoreProvider store={store}>
-      <RouterProvider initialLocation="/new-project">
-        <App.Container>
-          <Route route="/new-project">
-            <CreateTableForm />
-          </Route>
+    <RouterProvider initialLocation="/new-project">
+      <App.Container>
+        <Route route="/new-project">
+          <CreateTableForm />
+        </Route>
 
-          <Route route="/workspace">
-            <Workspace />
-          </Route>
-        </App.Container>
+        <Route route="/workspace">
+          <Workspace />
+        </Route>
+      </App.Container>
 
-        <ToastContainer autoClose={3000} position="top-right" />
-      </RouterProvider>
-    </StoreProvider>
+      <ToastContainer autoClose={3000} position="top-right" />
+    </RouterProvider>
   );
 };
 
