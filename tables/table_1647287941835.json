@@ -1,0 +1,20 @@
+{
+  "name": "as",
+  "localName": "",
+  "description": "dsa",
+  "tags": "sad",
+  "startDate": null,
+  "endDate": null,
+  "colorPalette": [
+    "#b0f4ff",
+    "#d7ffbf",
+    "#86aff7",
+    "#9a86f7"
+  ],
+  "step": {
+    "type": "days",
+    "value": 1
+  },
+  "createdAt": "2022-03-14T19:59:01.835Z",
+  "id": "2efde6c2-d1ca-44f2-9702-a013e2ea7f43"
+}

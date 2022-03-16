@@ -11,18 +11,13 @@ import fs from 'fs';
 import path from 'path';
 import { app } from '@electron/remote';
 import { useRouter } from '../../context/router';
-import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   createTable,
   deleteTable,
   loadTables,
-  setTableStatus,
 } from '../prediction-table/predictionTableActions';
-import {
-  getStatus,
-  getSortedPredictionTables,
-} from '../prediction-table/predictionTableReducer';
+import { getSortedPredictionTables } from '../prediction-table/predictionTableReducer';
 import { DEFAULT_TABLE_TEMPLATE } from './model';
 import { generatePredictionTable } from '../prediction-table/utils/generatePredictionTable';
 
@@ -93,6 +88,11 @@ const CreateTableForm = () => {
         <CreateTableForm.TitleText>
           Create new table
         </CreateTableForm.TitleText>
+        <CreateTableForm.ButtonClose
+          onClick={() => router.redirectTo('workspace')}
+        >
+          ✕
+        </CreateTableForm.ButtonClose>
 
         <CreateTableForm.Content>
           <CreateTableForm.LeftPanel>
@@ -275,6 +275,9 @@ CreateTableForm.Background = styled.div`
 CreateTableForm.Container = styled.div`
   display: flex;
   flex-direction: column;
+  position: relative;
+
+  border-top-right-radius: 12px;
 
   box-sizing: border-box;
   background: var(--color-z1);
@@ -382,6 +385,34 @@ CreateTableForm.AdvancedSettingsDivider = styled.div`
   position: absolute;
   top: 0;
   left: 98.5px;
+`;
+
+CreateTableForm.ButtonClose = styled.div`
+  background: transparent;
+  border: solid 1.8px transparent;
+  position: absolute;
+  right: 0;
+  top: 0;
+  line-height: 1;
+  font-size: 12px;
+  width: 26px;
+  height: 26px;
+  border-bottom-left-radius: 10px;
+  border-top-right-radius: 10px;
+  box-sizing: border-box;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  cursor: pointer;
+
+  :hover {
+    background: #000;
+    border: solid 1.8px #0af9;
+    transition: 0.3s;
+    color: #fff;
+  }
 `;
 
 export { CreateTableForm };
