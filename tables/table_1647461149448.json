@@ -1,0 +1,20 @@
+{
+  "name": "Table #2381",
+  "localName": "table_1647461094300.json",
+  "description": "t123",
+  "tags": "t12333",
+  "startDate": "2022-02-28T00:00:00.000Z",
+  "endDate": "2022-03-02T00:00:00.000Z",
+  "colorPalette": [
+    "#00ddff",
+    "#5eff00",
+    "#86aff7",
+    "#9a86f7"
+  ],
+  "step": {
+    "type": "days",
+    "value": "6"
+  },
+  "createdAt": "2022-03-16T20:05:49.448Z",
+  "id": "ddd8286c-c330-42b1-8400-7b10e6b9fc9e"
+}
