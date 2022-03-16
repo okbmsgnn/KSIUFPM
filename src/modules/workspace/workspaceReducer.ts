@@ -4,7 +4,8 @@ import { WorkspaceAction, WorkspaceState } from './model';
 export const STATE_KEY = 'workspace';
 
 const initialState: WorkspaceState = {
-  table: null,
+  tables: null,
+  activeTable: null,
 };
 
 // export const predictionTableReducer: Reducer<

@@ -1,0 +1,20 @@
+{
+  "name": "123",
+  "localName": "",
+  "description": "sdfdfs",
+  "tags": "ssd",
+  "startDate": null,
+  "endDate": null,
+  "colorPalette": [
+    "#b0f4ff",
+    "#d7ffbf",
+    "#86aff7",
+    "#9a86f7"
+  ],
+  "step": {
+    "type": "days",
+    "value": 1
+  },
+  "createdAt": "2022-03-14T20:02:33.883Z",
+  "id": "e436f116-6b28-4e07-8768-02fb2dd00b2f"
+}
