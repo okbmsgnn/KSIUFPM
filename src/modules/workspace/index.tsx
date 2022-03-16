@@ -1,18 +1,25 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { useRouter } from '../../context/router';
-import { getPredictionTables } from '../prediction-table/predictionTableReducer';
+import {
+  getIndexedPredictionTables,
+  getSortedPredictionTables,
+} from '../prediction-table/predictionTableReducer';
+import { openWindow, setActiveWindow } from './workspaceActions';
+import {
+  getActiveWindow,
+  getOrderedWindows,
+} from './workspaceReducer';
 
 export const Workspace = () => {
   const router = useRouter();
-  const tables = useSelector(getPredictionTables);
-
-  const openTables = [
-    '3cf14dd2-34b3-46fc-a8fd-68e4130fccc4',
-    'd7587a71-4ac4-41a7-b4bb-9e821cd1592d',
-  ].map((id) => tables.find((table) => table.id === id));
+  const dispatch = useDispatch();
+  const tables = useSelector(getSortedPredictionTables);
+  const indexedTables = useSelector(getIndexedPredictionTables);
+  const windows = useSelector(getOrderedWindows);
+  const activeWindow = useSelector(getActiveWindow);
 
   React.useEffect(() => {
     toast.success(router.location);
@@ -21,10 +28,35 @@ export const Workspace = () => {
   return (
     <>
       <Workspace.ChooseTable>
-        {tables.map((t, idx) => (
-          <div>{t.name}</div>
+        {tables.map((table) => (
+          <div
+            key={table.id}
+            onClick={() => dispatch(openWindow(table.id))}
+          >
+            {table.name}
+          </div>
         ))}
       </Workspace.ChooseTable>
+
+      {windows.map((window, idx) => (
+        <div
+          style={{
+            marginLeft: '200px',
+            width: window.size.width,
+            height: window.size.height,
+            position: 'absolute',
+            top: 50 + window.order * 30,
+            left: 50 + window.order * window.size.width,
+            background:
+              activeWindow?.id === window.id ? 'red' : 'initial',
+          }}
+          key={window.id}
+          onClick={() => dispatch(setActiveWindow(window.id))}
+        >
+          {window.order} - {indexedTables[window.id].name}
+        </div>
+      ))}
+
       <Workspace.KvadratikNazvanieVremennoe></Workspace.KvadratikNazvanieVremennoe>
     </>
   );

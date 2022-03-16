@@ -1,17 +1,146 @@
 import { Reducer } from 'react';
-import { WorkspaceAction, WorkspaceState } from './model';
+import * as R from 'ramda';
+import {
+  DEFAULT_WINDOW,
+  WindowState,
+  WorkspaceAction,
+  WorkspaceState,
+  WorkspaceWindow,
+} from './model';
+import {
+  CLOSE_WINDOW,
+  MAXIMIZE_WINDOW,
+  MINIMIZE_WINDOW,
+  NORMALIZE_WINDOW,
+  OPEN_WINDOW,
+  SET_ACTIVE_WINDOW,
+} from './workspaceActions';
+import { createSelector } from 'reselect';
+import { indexWindows } from './utils/indexWindows';
 
 export const STATE_KEY = 'workspace';
 
 const initialState: WorkspaceState = {
-  tables: null,
-  activeTable: null,
+  windows: {},
+  activeWindow: null,
 };
 
-// export const predictionTableReducer: Reducer<
-//   WorkspaceState,
-//   WorkspaceAction
-// > = (state = initialState, action) => {
-//   switch (action.type) {
-//   }
-// };
+export const workspaceReducer: Reducer<
+  WorkspaceState,
+  WorkspaceAction
+> = (state = initialState, action) => {
+  switch (action.type) {
+    case OPEN_WINDOW: {
+      const window: WorkspaceWindow = {
+        ...DEFAULT_WINDOW,
+        id: action.payload,
+      };
+
+      const orderedWindows = indexWindows(
+        R.assoc(window.id, window, state.windows)
+      );
+
+      return R.assoc('windows', orderedWindows, state);
+    }
+    case CLOSE_WINDOW: {
+      const windows = R.dissoc(action.payload, state.windows);
+      const orderedWindows = indexWindows(windows);
+
+      return R.assoc('windows', orderedWindows, state);
+    }
+    case MAXIMIZE_WINDOW: {
+      const window = R.path<WorkspaceWindow>(
+        ['windows', action.payload],
+        state
+      );
+      if (!window) return state;
+
+      return R.assocPath(['windows', action.payload], window, state);
+    }
+    case MINIMIZE_WINDOW: {
+      const window = R.path<WorkspaceWindow>(
+        ['windows', action.payload],
+        state
+      );
+      if (!window) return state;
+
+      return R.assocPath(
+        ['windows', action.payload],
+        WindowState.Minimized,
+        state
+      );
+    }
+    case NORMALIZE_WINDOW: {
+      const window = R.path<WorkspaceWindow>(
+        ['windows', action.payload],
+        state
+      );
+      if (!window) return state;
+
+      const normalizedWindow = {
+        ...window,
+        state: WindowState.Normal,
+      };
+      const windows = R.assocPath(
+        ['windows', action.payload],
+        normalizedWindow,
+        state.windows
+      );
+      const orderedWindows = indexWindows(windows);
+
+      return R.assocPath(
+        ['windows', action.payload],
+        orderedWindows,
+        state
+      );
+    }
+    case SET_ACTIVE_WINDOW: {
+      const window = R.path<WorkspaceWindow>(
+        ['windows', action.payload],
+        state
+      );
+      if (!window) return state;
+
+      const reorderedWindows = R.assoc(
+        action.payload,
+        { ...window, order: -1 },
+        state.windows
+      );
+      const orderedWindow = indexWindows(reorderedWindows);
+
+      return R.compose(
+        R.assoc('activeWindow', window),
+        R.assoc('windows', orderedWindow)
+      )(state) as WorkspaceState;
+    }
+    default:
+      return state;
+  }
+};
+
+export const getState = (state: any): WorkspaceState =>
+  state[STATE_KEY];
+
+export const getWindows = createSelector(
+  getState,
+  (state) => state.windows
+);
+
+export const getOrderedWindows = createSelector(
+  getWindows,
+  (windows) =>
+    Object.values(windows).sort((a, b) => a.order - b.order)
+);
+
+export const getMaximizedWindow = createSelector(
+  getWindows,
+  (windows) =>
+    Object.values(windows ?? {}).find(
+      (window) => window.state === WindowState.Maximized
+    )
+);
+
+export const getActiveWindow = createSelector(
+  getState,
+  (state) => state.activeWindow
+);

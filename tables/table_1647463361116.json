@@ -1,0 +1,20 @@
+{
+  "name": "Test table #1",
+  "localName": "",
+  "description": "description here",
+  "tags": "tag1 tag2",
+  "startDate": "2022-02-28T00:00:00.000Z",
+  "endDate": "2022-04-01T00:00:00.000Z",
+  "colorPalette": [
+    "#f50000",
+    "#ff0000",
+    "#00ff40",
+    "#00ff11"
+  ],
+  "step": {
+    "type": "hours",
+    "value": "6"
+  },
+  "createdAt": "2022-03-16T20:42:41.116Z",
+  "id": "4966f087-e7eb-4a75-a16f-f9a8345cfc37"
+}

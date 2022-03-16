@@ -1,6 +1,10 @@
 import { Reducer } from 'redux';
 import { createSelector } from 'reselect';
-import { PredictionTableAction, PredictionTableState } from './model';
+import {
+  PredictionTable,
+  PredictionTableAction,
+  PredictionTableState,
+} from './model';
 import {
   CREATE_TABLE,
   DELETE_TABLE,
@@ -56,6 +60,18 @@ export const getSortedPredictionTables = createSelector(
   (state) =>
     state.tables.sort(
       (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+    )
+);
+
+export const getIndexedPredictionTables = createSelector(
+  getState,
+  (state) =>
+    state.tables.reduce<{ [key: string]: PredictionTable }>(
+      (acc, n) => {
+        acc[n.id] = n;
+        return acc;
+      },
+      {}
     )
 );
 

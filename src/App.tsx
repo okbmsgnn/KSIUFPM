@@ -6,18 +6,11 @@ import { CreateTableForm } from './modules/create-table-form';
 import 'react-toastify/dist/ReactToastify.min.css';
 import { Route, RouterProvider } from './context/router';
 import { Workspace } from './modules/workspace';
-import {
-  getPredictionTables,
-  getStatus,
-} from './modules/prediction-table/predictionTableReducer';
+import { getStatus } from './modules/prediction-table/predictionTableReducer';
 import React from 'react';
-import { PredictionTable } from './modules/prediction-table/model';
 
 const App = () => {
   const status = useSelector(getStatus);
-  const [table, setTable] = React.useState<PredictionTable | null>(
-    null
-  );
 
   React.useEffect(() => {
     if (!status) return;
@@ -39,7 +32,7 @@ const App = () => {
         </Route>
       </App.Container>
 
-      <ToastContainer autoClose={3000} position="top-right" />
+      <ToastContainer autoClose={1000} position="top-right" />
     </RouterProvider>
   );
 };
