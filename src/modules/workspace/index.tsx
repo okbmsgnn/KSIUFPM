@@ -5,6 +5,7 @@ import {
   getIndexedPredictionTables,
   getSortedPredictionTables,
 } from '../prediction-table/predictionTableReducer';
+import { Timescale } from '../timescale';
 import { Window } from '../window';
 import { useWindow } from './hooks/useWindow';
 import {
@@ -28,20 +29,22 @@ export const Workspace = () => {
         </Workspace.MaximizedWindow>
       )}
 
-      <Workspace.Windows>
-        {windows.map((w) => (
-          <Window
-            window={w}
-            table={indexedTables[w.id]}
-            key={w.id}
-            activate={() => window.activate(w.id)}
-            maximize={() => window.maximize(w.id)}
-            minimize={() => window.minimize(w.id)}
-            normalize={() => window.normalize(w.id)}
-            close={() => window.close(w.id)}
-          />
-        ))}
-      </Workspace.Windows>
+      {windows.length !== 0 && (
+        <Workspace.Windows>
+          {windows.map((w) => (
+            <Window
+              window={w}
+              table={indexedTables[w.id]}
+              key={w.id}
+              activate={() => window.activate(w.id)}
+              maximize={() => window.maximize(w.id)}
+              minimize={() => window.minimize(w.id)}
+              normalize={() => window.normalize(w.id)}
+              close={() => window.close(w.id)}
+            />
+          ))}
+        </Workspace.Windows>
+      )}
 
       <Workspace.ChooseTable>
         {tables.map((t) => (
@@ -50,6 +53,8 @@ export const Workspace = () => {
           </div>
         ))}
       </Workspace.ChooseTable>
+
+      <Timescale interval={new Date()} />
     </Workspace.Container>
   );
 };
@@ -70,8 +75,6 @@ Workspace.Windows = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
 `;
 
 Workspace.ChooseTable = styled.div`
