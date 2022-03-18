@@ -119,7 +119,7 @@ Window.Container = styled.div<{
 
 Window.TitleBar = styled.div`
   background: #232323;
-  padding: 4px 8px;
+  padding: 4px 0 4px 8px;
   display: flex;
   justify-content: space-between;
 `;
@@ -140,6 +140,9 @@ Window.ControlButton = styled.div`
   width: 25px;
   color: #aaa;
   transition: 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   :hover {
     color: #fff;

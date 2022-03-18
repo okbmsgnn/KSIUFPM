@@ -7,7 +7,10 @@ import {
 } from '../prediction-table/predictionTableReducer';
 import { Window } from '../window';
 import { useWindow } from './hooks/useWindow';
-import { getWindowsAsArray } from './workspaceReducer';
+import {
+  getMaximizedWindow,
+  getWindowsAsArray,
+} from './workspaceReducer';
 
 export const Workspace = () => {
   const window = useWindow();
@@ -15,9 +18,31 @@ export const Workspace = () => {
   const tables = useSelector(getSortedPredictionTables);
   const indexedTables = useSelector(getIndexedPredictionTables);
   const windows = useSelector(getWindowsAsArray);
+  const maximizedWindow = useSelector(getMaximizedWindow);
 
   return (
     <Workspace.Container>
+      {maximizedWindow && (
+        <Workspace.MaximizedWindow>
+          {indexedTables[maximizedWindow.id].name}
+        </Workspace.MaximizedWindow>
+      )}
+
+      <Workspace.Windows>
+        {windows.map((w) => (
+          <Window
+            window={w}
+            table={indexedTables[w.id]}
+            key={w.id}
+            activate={() => window.activate(w.id)}
+            maximize={() => window.maximize(w.id)}
+            minimize={() => window.minimize(w.id)}
+            normalize={() => window.normalize(w.id)}
+            close={() => window.close(w.id)}
+          />
+        ))}
+      </Workspace.Windows>
+
       <Workspace.ChooseTable>
         {tables.map((t) => (
           <div key={t.id} onClick={() => window.open(t.id)}>
@@ -25,24 +50,26 @@ export const Workspace = () => {
           </div>
         ))}
       </Workspace.ChooseTable>
-
-      {windows.map((w) => (
-        <Window
-          window={w}
-          table={indexedTables[w.id]}
-          key={w.id}
-          activate={() => window.activate(w.id)}
-          maximize={() => window.maximize(w.id)}
-          minimize={() => window.minimize(w.id)}
-          normalize={() => window.normalize(w.id)}
-          close={() => window.close(w.id)}
-        />
-      ))}
     </Workspace.Container>
   );
 };
 
 Workspace.Container = styled.div`
+  width: 100%;
+  height: 100%;
+`;
+
+Workspace.MaximizedWindow = styled.div`
+  width: 100%;
+  height: 100%;
+
+  background: #232323;
+`;
+
+Workspace.Windows = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
 `;
@@ -53,6 +80,7 @@ Workspace.ChooseTable = styled.div`
   left: 0;
   width: 150px;
   height: 100%;
+  z-index: 1;
   transform: translateX(calc(-100% + 10px));
 
   background-color: rgb(0, 119, 255);

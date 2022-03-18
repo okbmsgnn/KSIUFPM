@@ -49,14 +49,21 @@ export const workspaceReducer: Reducer<
       return R.assoc('windows', orderedWindows, state);
     }
     case MAXIMIZE_WINDOW: {
-      const window = R.path<WorkspaceWindow>(
-        ['windows', action.payload],
-        state
-      );
+      const windows = R.mapObjIndexed<
+        WorkspaceWindow,
+        WorkspaceWindow,
+        string
+      >((value) => {
+        if (value.state === WindowState.Maximized)
+          value.state = WindowState.Normal;
+        return value;
+      }, state.windows);
+
+      const window = windows[action.payload];
       if (!window) return state;
       window.state = WindowState.Maximized;
 
-      return R.assocPath(['windows', action.payload], window, state);
+      return R.assoc('windows', windows, state);
     }
     case MINIMIZE_WINDOW: {
       const window = R.path<WorkspaceWindow>(
@@ -126,7 +133,10 @@ export const getWindows = createSelector(
 
 export const getWindowsAsArray = createSelector(
   getWindows,
-  (windows) => Object.values(windows)
+  (windows) =>
+    Object.values(windows).filter(
+      (window) => window.state !== WindowState.Maximized
+    )
 );
 
 export const getMaximizedWindow = createSelector(
