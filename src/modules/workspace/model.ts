@@ -1,3 +1,4 @@
+import { ISize } from '../../types/ISize';
 import { InferActionCreatorsTypes } from '../../utils/types';
 import { workspaceActions } from './workspaceActions';
 
@@ -10,15 +11,17 @@ export enum WindowState {
 export type WorkspaceWindow = {
   id: string;
   state: WindowState;
-  size: { width: number; height: number };
+  size: ISize;
   order: number;
+  index: number;
 };
 
 export const DEFAULT_WINDOW: WorkspaceWindow = {
   id: '',
-  size: { width: 300, height: 300 },
+  size: { width: 400, height: 300 },
   state: WindowState.Normal,
   order: -1,
+  index: -1,
 };
 
 export interface WorkspaceState {
