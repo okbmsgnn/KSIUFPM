@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import { useDrag } from '../../hooks/useDrag';
 import { ISize } from '../../types/ISize';
 import { PredictionTable } from '../prediction-table/model';
-import { WorkspaceWindow } from '../workspace/model';
+import { Timescale } from '../timescale';
+import { WindowState, WorkspaceWindow } from '../workspace/model';
 
 interface WindowProps {
   table: PredictionTable;
@@ -17,6 +18,15 @@ interface WindowProps {
 
 const globalWindow = window;
 
+const calculateInitialLocation = (
+  size: ISize,
+  maximized: boolean
+) => {
+  if (maximized) return { x: 0, y: 0 };
+
+  return { x: globalWindow.innerWidth / 4, y: 30 };
+};
+
 export const Window = ({
   window,
   table,
@@ -26,12 +36,24 @@ export const Window = ({
   normalize,
   close,
 }: WindowProps) => {
+  const maximized = React.useMemo(
+    () => window.state === WindowState.Maximized,
+    [window.state]
+  );
   const [mounted, setMounted] = React.useState(false);
   const [handleRef, containerRef, windowLocation] = useDrag(
     {
-      initialLocation: { x: globalWindow.innerWidth / 4, y: 30 },
+      initialLocation: calculateInitialLocation(
+        window.size,
+        maximized
+      ),
+      onDragStarted: () => {
+        if (!maximized) return;
+
+        normalize();
+      },
     },
-    []
+    [maximized]
   );
 
   const onActivate = React.useCallback(
@@ -47,7 +69,14 @@ export const Window = ({
   return (
     <Window.Container
       ref={(value) => (containerRef.current = value)}
-      size={window.size}
+      size={
+        maximized
+          ? {
+              width: globalWindow.innerWidth,
+              height: globalWindow.innerHeight,
+            }
+          : window.size
+      }
       order={window.order}
       mounted={mounted}
       style={{
@@ -71,7 +100,7 @@ export const Window = ({
           <Window.ControlButton
             data-ignore-drag
             data-ignore-activate
-            onClick={maximize}
+            onClick={maximized ? normalize : maximize}
           >
             ▢
           </Window.ControlButton>
@@ -86,7 +115,7 @@ export const Window = ({
       </Window.TitleBar>
 
       <Window.Content>
-        {JSON.stringify(table, null, 0)}
+        <Timescale tableId={table.id} />
       </Window.Content>
     </Window.Container>
   );

@@ -86,18 +86,14 @@ export const workspaceReducer: Reducer<
         ...window,
         state: WindowState.Normal,
       };
-      const windows = R.assocPath(
-        ['windows', action.payload],
+      const windows = R.assoc(
+        action.payload,
         normalizedWindow,
         state.windows
       );
       const orderedWindows = indexWindows(windows);
 
-      return R.assocPath(
-        ['windows', action.payload],
-        orderedWindows,
-        state
-      );
+      return R.assoc('windows', orderedWindows, state);
     }
     case SET_ACTIVE_WINDOW: {
       const window = R.path<WorkspaceWindow>(
@@ -111,11 +107,11 @@ export const workspaceReducer: Reducer<
         { ...window, order: -1 },
         state.windows
       );
-      const orderedWindow = indexWindows(reorderedWindows);
+      const orderedWindows = indexWindows(reorderedWindows);
 
       return R.compose(
         R.assoc('activeWindow', window),
-        R.assoc('windows', orderedWindow)
+        R.assoc('windows', orderedWindows)
       )(state) as WorkspaceState;
     }
     default:

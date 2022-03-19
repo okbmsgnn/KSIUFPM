@@ -44,6 +44,6 @@ export type TableStatus = {
 };
 
 export type PredictionTableState = {
-  tables: PredictionTable[];
+  tables: { [key: string]: PredictionTable };
   tableStatus: TableStatus | null;
 };

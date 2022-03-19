@@ -83,7 +83,9 @@ export const useZoom = (
       delta,
       zoomLevel,
       yScale,
+      ySize,
+      extremeDates,
     }),
-    [zoomLevel, yScale, delta, ...deps]
+    [zoomLevel, yScale, delta, extremeDates, ySize, ...deps]
   );
 };

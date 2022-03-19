@@ -5,7 +5,6 @@ import {
   getIndexedPredictionTables,
   getSortedPredictionTables,
 } from '../prediction-table/predictionTableReducer';
-import { Timescale } from '../timescale';
 import { Window } from '../window';
 import { useWindow } from './hooks/useWindow';
 import {
@@ -25,7 +24,16 @@ export const Workspace = () => {
     <Workspace.Container>
       {maximizedWindow && (
         <Workspace.MaximizedWindow>
-          {indexedTables[maximizedWindow.id].name}
+          <Window
+            window={maximizedWindow}
+            table={indexedTables[maximizedWindow.id]}
+            key={maximizedWindow.id}
+            activate={() => window.activate(maximizedWindow.id)}
+            maximize={() => window.maximize(maximizedWindow.id)}
+            minimize={() => window.minimize(maximizedWindow.id)}
+            normalize={() => window.normalize(maximizedWindow.id)}
+            close={() => window.close(maximizedWindow.id)}
+          />
         </Workspace.MaximizedWindow>
       )}
 
@@ -53,8 +61,6 @@ export const Workspace = () => {
           </div>
         ))}
       </Workspace.ChooseTable>
-
-      <Timescale interval={new Date()} />
     </Workspace.Container>
   );
 };
@@ -65,6 +71,8 @@ Workspace.Container = styled.div`
 `;
 
 Workspace.MaximizedWindow = styled.div`
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
 
@@ -75,6 +83,7 @@ Workspace.Windows = styled.div`
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 2;
 `;
 
 Workspace.ChooseTable = styled.div`
@@ -83,7 +92,7 @@ Workspace.ChooseTable = styled.div`
   left: 0;
   width: 150px;
   height: 100%;
-  z-index: 1;
+  z-index: 3;
   transform: translateX(calc(-100% + 10px));
 
   background-color: rgb(0, 119, 255);

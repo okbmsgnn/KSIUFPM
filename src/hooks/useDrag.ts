@@ -3,6 +3,7 @@ import { IPoint } from '../types/IPoint';
 
 interface DragProps {
   onDragStart?: () => void;
+  onDragStarted?: () => void;
   onDragTick?: () => void;
   onDragEnd?: () => void;
   initialLocation?: IPoint;
@@ -15,8 +16,13 @@ type DragData = [
 ];
 
 export const useDrag = (props: DragProps = {}, deps?: any[]) => {
-  const { initialLocation, onDragEnd, onDragStart, onDragTick } =
-    React.useMemo(() => props, deps);
+  const {
+    initialLocation,
+    onDragEnd,
+    onDragStart,
+    onDragStarted,
+    onDragTick,
+  } = React.useMemo(() => props, deps);
 
   const [location, setLocation] = React.useState<IPoint>(
     initialLocation ?? {
@@ -24,6 +30,7 @@ export const useDrag = (props: DragProps = {}, deps?: any[]) => {
       y: 0,
     }
   );
+  const [wasDragged, setWasDragged] = React.useState(false);
   const [pivot, setPivot] = React.useState<IPoint | null>(null);
   const handle = React.useRef<HTMLElement | null>(null);
   const container = React.useRef<HTMLElement | null>(null);
@@ -47,6 +54,7 @@ export const useDrag = (props: DragProps = {}, deps?: any[]) => {
     (e: MouseEvent) => {
       if (!pivot) return;
       onDragTick?.call(null);
+      setWasDragged(true);
       setLocation({ x: e.pageX - pivot.x, y: e.pageY - pivot.y });
     },
     [pivot]
@@ -54,6 +62,7 @@ export const useDrag = (props: DragProps = {}, deps?: any[]) => {
 
   const endDrag = React.useCallback(() => {
     onDragEnd?.call(null);
+    setWasDragged(false);
     setPivot(null);
   }, []);
 
@@ -81,6 +90,12 @@ export const useDrag = (props: DragProps = {}, deps?: any[]) => {
       document.removeEventListener('mouseup', endDrag);
     };
   }, [pivot, endDrag, tickDrag]);
+
+  React.useEffect(() => {
+    if (!wasDragged) return;
+
+    onDragStarted?.call(null);
+  }, [wasDragged]);
 
   return React.useMemo<DragData>(
     () => [handle, container, location],
