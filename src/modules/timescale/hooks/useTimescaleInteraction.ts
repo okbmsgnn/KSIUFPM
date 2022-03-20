@@ -36,16 +36,16 @@ export const useTimescaleInteraction = ({
     [extremeDates, timescaleSize.height, table]
   );
 
-  const startDrag = useDrag({
+  const drag = useDrag({
     tableId,
     zoom,
   });
 
   return React.useMemo(
     () => ({
+      ...drag,
       extremeDates,
-      startDrag,
     }),
-    [extremeDates]
+    [drag, extremeDates]
   );
 };

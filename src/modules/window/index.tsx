@@ -169,8 +169,7 @@ Window.Container = styled.div<{
   justify-content: flex-start;
   overflow: hidden;
 
-  border: 2px solid #232323;
-  box-sizing: border-box;
+  outline: 2.5px solid #232323;
 
   opacity: ${({ mounted }) => (mounted ? 1 : 0)};
   transition: opacity 0.2s ease-in, width 0.4s, height 0.4s;

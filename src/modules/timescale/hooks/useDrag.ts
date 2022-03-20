@@ -51,5 +51,11 @@ export const useDrag = ({ tableId, zoom }: DragProps) => {
     };
   }, [isDragging, drag, endDrag]);
 
-  return startDrag;
+  return React.useMemo(
+    () => ({
+      isDragging,
+      startDrag,
+    }),
+    [isDragging, startDrag]
+  );
 };

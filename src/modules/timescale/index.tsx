@@ -31,6 +31,7 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
 
   return (
     <Timescale.Container
+      cursor={interaction.isDragging ? 'grabbing' : 'grab'}
       onMouseDown={interaction.startDrag}
       ref={(value) => (container.current = value)}
     >
@@ -41,10 +42,12 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
   );
 };
 
-Timescale.Container = styled.div`
+Timescale.Container = styled.div<{ cursor: 'grab' | 'grabbing' }>`
   width: 100%;
   height: 100%;
 
   background: #121212;
   color: #fff;
+
+  cursor: ${({ cursor }) => cursor};
 `;
