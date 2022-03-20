@@ -6,19 +6,21 @@ import {
   getSortedPredictionTables,
 } from '../prediction-table/predictionTableReducer';
 import { Window } from '../window';
+import { useGhostArea } from './hooks/useGhostArea';
 import { initOpenWindow } from './workspaceActions';
 import { getWindows, getWindowsAsArray } from './workspaceReducer';
 
 export const Workspace = () => {
   const dispatch = useDispatch();
+  const { GhostArea, setGhostAreaColor, toggleGhostAreaVisibility } =
+    useGhostArea({
+      override: [, 75, 75],
+    });
 
   const tables = useSelector(getSortedPredictionTables);
   const indexedTables = useSelector(getIndexedPredictionTables);
   const windows = useSelector(getWindowsAsArray);
   const indexedWindows = useSelector(getWindows);
-
-  const [isMaximizingWindow, setIsMaximizingWindow] =
-    React.useState(false);
 
   return (
     <Workspace.Container>
@@ -28,14 +30,15 @@ export const Workspace = () => {
             <Window
               window={w}
               table={indexedTables[w.id]}
-              toggleIsMaximizing={setIsMaximizingWindow}
+              setGhostAreaColor={setGhostAreaColor}
+              toggleGhostAreaVisibility={toggleGhostAreaVisibility}
               key={w.id}
             />
           ))}
         </Workspace.Windows>
       )}
 
-      <Workspace.MaximizingTooltip show={isMaximizingWindow} />
+      {GhostArea}
 
       <Workspace.ChooseTable>
         {tables.map((t) => (
@@ -61,27 +64,6 @@ export const Workspace = () => {
 Workspace.Container = styled.div`
   width: 100%;
   height: 100%;
-`;
-
-Workspace.MaximizingTooltip = styled.div<{ show: boolean }>`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-
-  opacity: ${({ show }) => (show ? 1 : 0)};
-
-  background: linear-gradient(
-    to bottom,
-    rgba(224, 17, 95, 0.3),
-    transparent
-  );
-
-  transition: opacity 0.3s;
-  pointer-events: none;
-
-  z-index: 2;
 `;
 
 Workspace.Windows = styled.div`

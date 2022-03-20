@@ -1,21 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
-import debounce from 'lodash.debounce';
 import { ColorPicker } from '../../components/color-picker';
 import { NeonInput } from '../../components/neon-input';
 import { NumericInput } from '../../components/numeric-input';
 import { RangePicker } from '../../components/range-picker';
 import { SelectOption } from '../../components/select-option';
 
-import fs from 'fs';
-import path from 'path';
-import { app } from '@electron/remote';
 import { useRouter } from '../../context/router';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   createTable,
   deleteTable,
-  loadTables,
 } from '../prediction-table/predictionTableActions';
 import { getSortedPredictionTables } from '../prediction-table/predictionTableReducer';
 import { DEFAULT_TABLE_TEMPLATE } from './model';
@@ -64,23 +59,6 @@ const CreateTableForm = () => {
     await dispatch(createTable(newTable));
     router.redirectTo('workspace');
   }, [data]);
-
-  const loadTablesDebounce = React.useMemo(
-    () => debounce(() => dispatch(loadTables()), 500),
-    []
-  );
-
-  React.useEffect(() => {
-    const basePath = path.join(app.getAppPath(), 'tables');
-
-    dispatch(loadTables());
-
-    const watcher = fs.watch(basePath, {}, (r, s) => {
-      loadTablesDebounce();
-    });
-
-    return () => watcher.close();
-  }, []);
 
   return (
     <CreateTableForm.Background>

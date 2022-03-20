@@ -19,6 +19,7 @@ module.exports = {
   rules: {
     // General
     //'comma-dangle': ['warn', 'always-multiline'],
+    'no-sparse-arrays': 'off',
     'import/no-named-as-default': 0,
     'global-require': 'warn',
     'key-spacing': 'off',

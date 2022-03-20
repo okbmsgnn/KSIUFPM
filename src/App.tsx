@@ -9,11 +9,17 @@ import { Workspace } from './modules/workspace';
 import { getStatus } from './modules/prediction-table/predictionTableReducer';
 import React from 'react';
 import { setWindowSize } from './modules/application/applicationActions';
+import debounce from 'lodash.debounce';
+import path from 'path';
+import { app } from '@electron/remote';
+import { loadTables } from './modules/prediction-table/predictionTableActions';
+import fs from 'fs';
 
 const App = () => {
   const dispatch = useDispatch();
   const status = useSelector(getStatus);
 
+  // Store window size
   React.useEffect(() => {
     const handler = (e: UIEvent) => {
       dispatch(
@@ -38,6 +44,7 @@ const App = () => {
     };
   }, []);
 
+  // Show status
   React.useEffect(() => {
     if (!status) return;
 
@@ -45,6 +52,24 @@ const App = () => {
 
     notify(status.description);
   }, [status]);
+
+  // Load tables
+  React.useEffect(() => {
+    const basePath = path.join(app.getAppPath(), 'tables');
+
+    const loadTablesDebounce = debounce(
+      () => dispatch(loadTables()),
+      500
+    );
+
+    dispatch(loadTables());
+
+    const watcher = fs.watch(basePath, {}, (r, s) => {
+      loadTablesDebounce();
+    });
+
+    return () => watcher.close();
+  }, []);
 
   return (
     <RouterProvider initialLocation="/new-project">

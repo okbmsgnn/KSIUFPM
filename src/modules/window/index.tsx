@@ -10,7 +10,8 @@ import { WindowState, WorkspaceWindow } from '../workspace/model';
 interface WindowProps {
   table: PredictionTable;
   window: WorkspaceWindow;
-  toggleIsMaximizing: (value: boolean) => void;
+  setGhostAreaColor: (hex: string) => void;
+  toggleGhostAreaVisibility: (value: boolean) => void;
 }
 
 const calculateInitialLocation = (
@@ -25,7 +26,8 @@ const calculateInitialLocation = (
 export const Window = ({
   window,
   table,
-  toggleIsMaximizing,
+  setGhostAreaColor,
+  toggleGhostAreaVisibility,
 }: WindowProps) => {
   const { activate, close, locate, maximize, minimize, normalize } =
     useWindow(window.id);
@@ -98,7 +100,8 @@ export const Window = ({
   React.useEffect(() => setMounted(true), []);
 
   React.useEffect(() => {
-    toggleIsMaximizing(isMaximizing);
+    if (isMaximizing) setGhostAreaColor(table.colorPalette[0]);
+    toggleGhostAreaVisibility(isMaximizing);
   }, [isMaximizing]);
 
   React.useEffect(() => {
