@@ -17,7 +17,6 @@ import {
 } from './workspaceActions';
 import { createSelector } from 'reselect';
 import { indexWindows } from './utils/indexWindows';
-import { createWindow } from './utils/createWindow';
 
 export const STATE_KEY = 'workspace';
 
@@ -32,9 +31,7 @@ export const workspaceReducer: Reducer<
 > = (state = initialState, action) => {
   switch (action.type) {
     case OPEN_WINDOW: {
-      const window = createWindow({
-        id: action.payload,
-      });
+      const window = action.payload;
 
       const orderedWindows = indexWindows(
         R.assoc(window.id, window, state.windows)
@@ -130,9 +127,8 @@ export const getWindows = createSelector(
   (state) => state.windows
 );
 
-export const getWindowsAsArray = createSelector(
-  getWindows,
-  (windows) => Object.values(windows)
+export const getWindowsAsArray = createSelector(getState, (state) =>
+  Object.values(state.windows)
 );
 
 export const getMaximizedWindow = createSelector(

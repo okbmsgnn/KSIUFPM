@@ -29,7 +29,9 @@ const App = () => {
         })
       );
     };
+
     window.addEventListener('resize', handler);
+    window.dispatchEvent(new UIEvent('resize'));
 
     return () => {
       window.removeEventListener('resize', handler);

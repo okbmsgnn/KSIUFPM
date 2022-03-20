@@ -1,7 +1,10 @@
 import { IPoint } from '../../types/IPoint';
+import { WorkspaceWindow } from './model';
 
 export const namespace = 'WORKSPACE';
 
+export const INIT_OPEN_WINDOW =
+  `${namespace}/INIT_OPEN_WINDOW` as const;
 export const OPEN_WINDOW = `${namespace}/OPEN_WINDOW` as const;
 export const CLOSE_WINDOW = `${namespace}/CLOSE_WINDOW` as const;
 export const MAXIMIZE_WINDOW =
@@ -14,7 +17,12 @@ export const SET_ACTIVE_WINDOW =
   `${namespace}/SET_ACTIVE_WINDOW` as const;
 export const LOCATE_WINDOW = `${namespace}/LOCATE_WINDOW` as const;
 
-export const openWindow = (payload: string) => ({
+export const initOpenWindow = (payload: string) => ({
+  type: INIT_OPEN_WINDOW,
+  payload,
+});
+
+export const openWindow = (payload: WorkspaceWindow) => ({
   type: OPEN_WINDOW,
   payload,
 });

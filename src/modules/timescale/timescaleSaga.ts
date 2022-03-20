@@ -8,9 +8,9 @@ import { setExtremeDates } from './timescaleActions';
 function* setTimescaleDataSaga(
   action: any
 ): Generator<any, any, any> {
-  const tableId = action.payload;
+  const window = action.payload;
   const table: PredictionTable = yield select(getTableById, {
-    tableId,
+    tableId: window.id,
   });
 
   const startDate = table.startDate ?? new Date();
@@ -34,7 +34,7 @@ function* setTimescaleDataSaga(
         max: endDate,
         min: startDate,
       },
-      tableId,
+      tableId: window.id,
     })
   );
 }

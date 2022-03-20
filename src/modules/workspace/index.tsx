@@ -5,8 +5,8 @@ import {
   getSortedPredictionTables,
 } from '../prediction-table/predictionTableReducer';
 import { Window } from '../window';
-import { openWindow } from './workspaceActions';
-import { getWindowsAsArray } from './workspaceReducer';
+import { initOpenWindow } from './workspaceActions';
+import { getWindows, getWindowsAsArray } from './workspaceReducer';
 
 export const Workspace = () => {
   const dispatch = useDispatch();
@@ -14,6 +14,7 @@ export const Workspace = () => {
   const tables = useSelector(getSortedPredictionTables);
   const indexedTables = useSelector(getIndexedPredictionTables);
   const windows = useSelector(getWindowsAsArray);
+  const indexedWindows = useSelector(getWindows);
 
   return (
     <Workspace.Container>
@@ -31,7 +32,17 @@ export const Workspace = () => {
 
       <Workspace.ChooseTable>
         {tables.map((t) => (
-          <div key={t.id} onClick={() => dispatch(openWindow(t.id))}>
+          <div
+            key={t.id}
+            onClick={() => {
+              if (indexedWindows[t.id]) return;
+              dispatch(initOpenWindow(t.id));
+            }}
+            style={{
+              color: indexedWindows[t.id] ? '#000' : '#fff',
+              background: indexedWindows[t.id] ? '#fff' : 'initial',
+            }}
+          >
             {t.name}
           </div>
         ))}
