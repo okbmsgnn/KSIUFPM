@@ -1,3 +1,4 @@
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
@@ -16,6 +17,9 @@ export const Workspace = () => {
   const windows = useSelector(getWindowsAsArray);
   const indexedWindows = useSelector(getWindows);
 
+  const [isMaximizingWindow, setIsMaximizingWindow] =
+    React.useState(false);
+
   return (
     <Workspace.Container>
       {windows.length !== 0 && (
@@ -24,11 +28,14 @@ export const Workspace = () => {
             <Window
               window={w}
               table={indexedTables[w.id]}
+              toggleIsMaximizing={setIsMaximizingWindow}
               key={w.id}
             />
           ))}
         </Workspace.Windows>
       )}
+
+      <Workspace.MaximizingTooltip show={isMaximizingWindow} />
 
       <Workspace.ChooseTable>
         {tables.map((t) => (
@@ -56,6 +63,27 @@ Workspace.Container = styled.div`
   height: 100%;
 `;
 
+Workspace.MaximizingTooltip = styled.div<{ show: boolean }>`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  opacity: ${({ show }) => (show ? 1 : 0)};
+
+  background: linear-gradient(
+    to bottom,
+    rgba(224, 17, 95, 0.3),
+    transparent
+  );
+
+  transition: opacity 0.3s;
+  pointer-events: none;
+
+  z-index: 2;
+`;
+
 Workspace.Windows = styled.div`
   position: absolute;
   top: 0;
@@ -71,7 +99,7 @@ Workspace.ChooseTable = styled.div`
   left: 0;
   width: 150px;
   height: 100%;
-  z-index: 2;
+  z-index: 3;
   transform: translateX(calc(-100% + 10px));
 
   background-color: rgb(0, 119, 255);

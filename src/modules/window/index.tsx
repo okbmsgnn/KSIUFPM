@@ -10,6 +10,7 @@ import { WindowState, WorkspaceWindow } from '../workspace/model';
 interface WindowProps {
   table: PredictionTable;
   window: WorkspaceWindow;
+  toggleIsMaximizing: (value: boolean) => void;
 }
 
 const calculateInitialLocation = (
@@ -21,7 +22,11 @@ const calculateInitialLocation = (
   return location;
 };
 
-export const Window = ({ window, table }: WindowProps) => {
+export const Window = ({
+  window,
+  table,
+  toggleIsMaximizing,
+}: WindowProps) => {
   const { activate, close, locate, maximize, minimize, normalize } =
     useWindow(window.id);
 
@@ -30,13 +35,15 @@ export const Window = ({ window, table }: WindowProps) => {
     [window.state]
   );
   const [mounted, setMounted] = React.useState(false);
+  const [isMaximizing, setIsMaximizing] = React.useState(false);
 
-  const [handleRef, containerRef, windowLocation] = useDrag(
+  const {
+    handle: handleRef,
+    container: containerRef,
+    location: windowLocation,
+    setLocation,
+  } = useDrag(
     {
-      initialLocation: calculateInitialLocation(
-        window.location,
-        maximized
-      ),
       onDragStarted: ({ pivot }) => {
         if (!maximized || !handleRef.current) return;
 
@@ -56,10 +63,19 @@ export const Window = ({ window, table }: WindowProps) => {
         return newPivot;
       },
       onDragEnd: (location) => {
+        if (isMaximizing) {
+          maximize();
+          setIsMaximizing(false);
+          return;
+        }
+
         locate(location);
       },
+      onDragTick: (location) => {
+        setIsMaximizing(location.y <= 20);
+      },
     },
-    [maximized, window.size]
+    [maximized, isMaximizing, window.size]
   );
 
   const onActivate = React.useCallback(
@@ -80,6 +96,14 @@ export const Window = ({ window, table }: WindowProps) => {
   );
 
   React.useEffect(() => setMounted(true), []);
+
+  React.useEffect(() => {
+    toggleIsMaximizing(isMaximizing);
+  }, [isMaximizing]);
+
+  React.useEffect(() => {
+    setLocation(calculateInitialLocation(window.location, maximized));
+  }, [window.location, maximized]);
 
   return (
     <Window.Container

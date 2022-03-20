@@ -4,16 +4,17 @@ import { IPoint } from '../types/IPoint';
 interface DragProps {
   onDragStart?: () => void;
   onDragStarted?: (event: { pivot: IPoint }) => void | IPoint;
-  onDragTick?: () => void;
+  onDragTick?: (location: IPoint) => void;
   onDragEnd?: (location: IPoint) => void;
   initialLocation?: IPoint;
 }
 
-type DragData = [
-  React.MutableRefObject<HTMLElement | null>,
-  React.MutableRefObject<HTMLElement | null>,
-  IPoint
-];
+type DragData = {
+  handle: React.MutableRefObject<HTMLElement | null>;
+  container: React.MutableRefObject<HTMLElement | null>;
+  location: IPoint;
+  setLocation: (location: IPoint) => void;
+};
 
 export const useDrag = (props: DragProps = {}, deps?: any[]) => {
   const {
@@ -54,9 +55,12 @@ export const useDrag = (props: DragProps = {}, deps?: any[]) => {
     (e: MouseEvent) => {
       if (!pivot) return;
 
-      if (wasDragged.current) {
-        onDragTick?.call(null);
-      } else {
+      const newLocation = {
+        x: e.pageX - pivot.x,
+        y: e.pageY - pivot.y,
+      };
+
+      if (!wasDragged.current) {
         wasDragged.current = true;
         const newPivot = onDragStarted?.call(null, {
           pivot,
@@ -72,10 +76,8 @@ export const useDrag = (props: DragProps = {}, deps?: any[]) => {
         }
       }
 
-      setLocation({
-        x: e.pageX - pivot.x,
-        y: e.pageY - pivot.y,
-      });
+      onDragTick?.call(null, newLocation);
+      setLocation(newLocation);
     },
     [pivot, location]
   );
@@ -111,7 +113,12 @@ export const useDrag = (props: DragProps = {}, deps?: any[]) => {
   }, [pivot, endDrag, tickDrag]);
 
   return React.useMemo<DragData>(
-    () => [handle, container, location],
+    () => ({
+      handle,
+      container,
+      location,
+      setLocation,
+    }),
     [handle, container, location]
   );
 };
