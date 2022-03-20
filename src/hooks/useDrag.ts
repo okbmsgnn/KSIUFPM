@@ -3,9 +3,9 @@ import { IPoint } from '../types/IPoint';
 
 interface DragProps {
   onDragStart?: () => void;
-  onDragStarted?: () => void;
+  onDragStarted?: (event: { pivot: IPoint }) => void | IPoint;
   onDragTick?: () => void;
-  onDragEnd?: () => void;
+  onDragEnd?: (location: IPoint) => void;
   initialLocation?: IPoint;
 }
 
@@ -30,7 +30,7 @@ export const useDrag = (props: DragProps = {}, deps?: any[]) => {
       y: 0,
     }
   );
-  const [wasDragged, setWasDragged] = React.useState(false);
+  const wasDragged = React.useRef(false);
   const [pivot, setPivot] = React.useState<IPoint | null>(null);
   const handle = React.useRef<HTMLElement | null>(null);
   const container = React.useRef<HTMLElement | null>(null);
@@ -53,23 +53,42 @@ export const useDrag = (props: DragProps = {}, deps?: any[]) => {
   const tickDrag = React.useCallback(
     (e: MouseEvent) => {
       if (!pivot) return;
-      onDragTick?.call(null);
-      setWasDragged(true);
-      setLocation({ x: e.pageX - pivot.x, y: e.pageY - pivot.y });
+
+      if (wasDragged.current) {
+        onDragTick?.call(null);
+      } else {
+        wasDragged.current = true;
+        const newPivot = onDragStarted?.call(null, {
+          pivot,
+        });
+        if (newPivot) {
+          setPivot(newPivot);
+          setLocation({
+            x: e.pageX - newPivot.x,
+            y: e.pageY - newPivot.y,
+          });
+
+          return;
+        }
+      }
+
+      setLocation({
+        x: e.pageX - pivot.x,
+        y: e.pageY - pivot.y,
+      });
     },
-    [pivot]
+    [pivot, location]
   );
 
   const endDrag = React.useCallback(() => {
-    onDragEnd?.call(null);
-    setWasDragged(false);
+    if (wasDragged.current) onDragEnd?.call(null, location);
+    wasDragged.current = false;
     setPivot(null);
-  }, []);
+  }, [location]);
 
-  React.useEffect(
-    () => setLocation(initialLocation ?? { x: 0, y: 0 }),
-    [initialLocation]
-  );
+  React.useEffect(() => {
+    setLocation(initialLocation ?? { x: 0, y: 0 });
+  }, [initialLocation]);
 
   React.useEffect(() => {
     if (!handle.current) return;
@@ -90,12 +109,6 @@ export const useDrag = (props: DragProps = {}, deps?: any[]) => {
       document.removeEventListener('mouseup', endDrag);
     };
   }, [pivot, endDrag, tickDrag]);
-
-  React.useEffect(() => {
-    if (!wasDragged) return;
-
-    onDragStarted?.call(null);
-  }, [wasDragged]);
 
   return React.useMemo<DragData>(
     () => [handle, container, location],

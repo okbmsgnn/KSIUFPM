@@ -1,67 +1,82 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useDrag } from '../../hooks/useDrag';
-import { ISize } from '../../types/ISize';
+import { IPoint } from '../../types/IPoint';
 import { PredictionTable } from '../prediction-table/model';
 import { Timescale } from '../timescale';
+import { useWindow } from '../workspace/hooks/useWindow';
 import { WindowState, WorkspaceWindow } from '../workspace/model';
 
 interface WindowProps {
   table: PredictionTable;
   window: WorkspaceWindow;
-  maximize: () => void;
-  minimize: () => void;
-  normalize: () => void;
-  activate: () => void;
-  close: () => void;
 }
 
-const globalWindow = window;
-
 const calculateInitialLocation = (
-  size: ISize,
+  location: IPoint,
   maximized: boolean
 ) => {
   if (maximized) return { x: 0, y: 0 };
 
-  return { x: globalWindow.innerWidth / 4, y: 30 };
+  return location;
 };
 
-export const Window = ({
-  window,
-  table,
-  activate,
-  maximize,
-  minimize,
-  normalize,
-  close,
-}: WindowProps) => {
+export const Window = ({ window, table }: WindowProps) => {
+  const { activate, close, locate, maximize, minimize, normalize } =
+    useWindow(window.id);
+
   const maximized = React.useMemo(
     () => window.state === WindowState.Maximized,
     [window.state]
   );
   const [mounted, setMounted] = React.useState(false);
+
   const [handleRef, containerRef, windowLocation] = useDrag(
     {
       initialLocation: calculateInitialLocation(
-        window.size,
+        window.location,
         maximized
       ),
-      onDragStarted: () => {
-        if (!maximized) return;
+      onDragStarted: ({ pivot }) => {
+        if (!maximized || !handleRef.current) return;
+
+        const newPivot = {
+          x:
+            (window.size.width * pivot.x) /
+            handleRef.current.offsetWidth,
+          y: pivot.y,
+        };
+
+        if (newPivot.x < 20) newPivot.x = 20;
+        else if (newPivot.x > window.size.width - 90)
+          newPivot.x = window.size.width - 90;
 
         normalize();
+
+        return newPivot;
+      },
+      onDragEnd: (location) => {
+        locate(location);
       },
     },
-    [maximized]
+    [maximized, window.size]
   );
 
   const onActivate = React.useCallback(
     (e: React.MouseEvent) => {
-      if ((e.target as HTMLElement).dataset.ignoreActivate) return;
+      if ((e.target as HTMLElement).dataset.ignoreDrag) return;
       activate();
     },
     [activate]
+  );
+
+  const onMaximize = React.useCallback(
+    (e: React.MouseEvent) => {
+      if ((e.target as HTMLElement).dataset.ignoreDrag) return;
+      if (maximized) normalize();
+      else maximize();
+    },
+    [maximize, normalize, maximized]
   );
 
   React.useEffect(() => setMounted(true), []);
@@ -69,46 +84,35 @@ export const Window = ({
   return (
     <Window.Container
       ref={(value) => (containerRef.current = value)}
-      size={
-        maximized
-          ? {
-              width: globalWindow.innerWidth,
-              height: globalWindow.innerHeight,
-            }
-          : window.size
-      }
-      order={window.order}
+      size={{
+        width: maximized ? '100%' : `${window.size.width}px`,
+        height: maximized ? '100%' : `${window.size.height}px`,
+      }}
       mounted={mounted}
       style={{
         top: windowLocation.y,
         left: windowLocation.x,
-        zIndex: window.index,
+        zIndex: maximized ? 0 : window.index,
       }}
       onMouseDown={onActivate}
     >
-      <Window.TitleBar ref={(value) => (handleRef.current = value)}>
+      <Window.TitleBar
+        ref={(value) => (handleRef.current = value)}
+        onDoubleClick={onMaximize}
+      >
         <Window.Name>{table.name}</Window.Name>
 
         <Window.Controls>
-          <Window.ControlButton
-            data-ignore-drag
-            data-ignore-activate
-            onClick={minimize}
-          >
+          <Window.ControlButton data-ignore-drag onClick={minimize}>
             –
           </Window.ControlButton>
           <Window.ControlButton
             data-ignore-drag
-            data-ignore-activate
             onClick={maximized ? normalize : maximize}
           >
             ▢
           </Window.ControlButton>
-          <Window.ControlButton
-            data-ignore-drag
-            data-ignore-activate
-            onClick={close}
-          >
+          <Window.ControlButton data-ignore-drag onClick={close}>
             ✕
           </Window.ControlButton>
         </Window.Controls>
@@ -122,14 +126,13 @@ export const Window = ({
 };
 
 Window.Container = styled.div<{
-  size: ISize;
-  order: number;
+  size: { width: string; height: string };
   mounted: boolean;
 }>`
   position: absolute;
 
-  width: ${({ mounted, size }) => (mounted ? size.width : 0)}px;
-  height: ${({ mounted, size }) => (mounted ? size.height : 0)}px;
+  width: ${({ mounted, size }) => (mounted ? size.width : 0)};
+  height: ${({ mounted, size }) => (mounted ? size.height : 0)};
 
   background: #fff;
   color: #000;

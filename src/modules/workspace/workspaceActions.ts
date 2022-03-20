@@ -1,3 +1,5 @@
+import { IPoint } from '../../types/IPoint';
+
 export const namespace = 'WORKSPACE';
 
 export const OPEN_WINDOW = `${namespace}/OPEN_WINDOW` as const;
@@ -10,6 +12,7 @@ export const NORMALIZE_WINDOW =
   `${namespace}/NORMALIZE_WINDOW` as const;
 export const SET_ACTIVE_WINDOW =
   `${namespace}/SET_ACTIVE_WINDOW` as const;
+export const LOCATE_WINDOW = `${namespace}/LOCATE_WINDOW` as const;
 
 export const openWindow = (payload: string) => ({
   type: OPEN_WINDOW,
@@ -41,6 +44,14 @@ export const setActiveWindow = (payload: string) => ({
   payload,
 });
 
+export const locateWindow = (payload: {
+  id: string;
+  location: IPoint;
+}) => ({
+  type: LOCATE_WINDOW,
+  payload,
+});
+
 export const workspaceActions = {
   openWindow,
   closeWindow,
@@ -48,4 +59,5 @@ export const workspaceActions = {
   maximizeWindow,
   normalizeWindow,
   setActiveWindow,
+  locateWindow,
 };

@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast, ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
 import { CreateTableForm } from './modules/create-table-form';
@@ -8,9 +8,33 @@ import { Route, RouterProvider } from './context/router';
 import { Workspace } from './modules/workspace';
 import { getStatus } from './modules/prediction-table/predictionTableReducer';
 import React from 'react';
+import { setWindowSize } from './modules/application/applicationActions';
 
 const App = () => {
+  const dispatch = useDispatch();
   const status = useSelector(getStatus);
+
+  React.useEffect(() => {
+    const handler = (e: UIEvent) => {
+      dispatch(
+        setWindowSize({
+          client: {
+            height: (e.target as Window).innerHeight,
+            width: (e.target as Window).innerWidth,
+          },
+          offset: {
+            height: (e.target as Window).outerHeight,
+            width: (e.target as Window).outerWidth,
+          },
+        })
+      );
+    };
+    window.addEventListener('resize', handler);
+
+    return () => {
+      window.removeEventListener('resize', handler);
+    };
+  }, []);
 
   React.useEffect(() => {
     if (!status) return;

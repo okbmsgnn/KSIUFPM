@@ -1,42 +1,22 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
   getIndexedPredictionTables,
   getSortedPredictionTables,
 } from '../prediction-table/predictionTableReducer';
 import { Window } from '../window';
-import { useWindow } from './hooks/useWindow';
-import {
-  getMaximizedWindow,
-  getWindowsAsArray,
-} from './workspaceReducer';
+import { openWindow } from './workspaceActions';
+import { getWindowsAsArray } from './workspaceReducer';
 
 export const Workspace = () => {
-  const window = useWindow();
+  const dispatch = useDispatch();
 
   const tables = useSelector(getSortedPredictionTables);
   const indexedTables = useSelector(getIndexedPredictionTables);
   const windows = useSelector(getWindowsAsArray);
-  const maximizedWindow = useSelector(getMaximizedWindow);
 
   return (
     <Workspace.Container>
-      {maximizedWindow && (
-        <Workspace.MaximizedWindow>
-          <Window
-            window={maximizedWindow}
-            table={indexedTables[maximizedWindow.id]}
-            key={maximizedWindow.id}
-            activate={() => window.activate(maximizedWindow.id)}
-            maximize={() => window.maximize(maximizedWindow.id)}
-            minimize={() => window.minimize(maximizedWindow.id)}
-            normalize={() => window.normalize(maximizedWindow.id)}
-            close={() => window.close(maximizedWindow.id)}
-          />
-        </Workspace.MaximizedWindow>
-      )}
-
       {windows.length !== 0 && (
         <Workspace.Windows>
           {windows.map((w) => (
@@ -44,11 +24,6 @@ export const Workspace = () => {
               window={w}
               table={indexedTables[w.id]}
               key={w.id}
-              activate={() => window.activate(w.id)}
-              maximize={() => window.maximize(w.id)}
-              minimize={() => window.minimize(w.id)}
-              normalize={() => window.normalize(w.id)}
-              close={() => window.close(w.id)}
             />
           ))}
         </Workspace.Windows>
@@ -56,7 +31,7 @@ export const Workspace = () => {
 
       <Workspace.ChooseTable>
         {tables.map((t) => (
-          <div key={t.id} onClick={() => window.open(t.id)}>
+          <div key={t.id} onClick={() => dispatch(openWindow(t.id))}>
             {t.name}
           </div>
         ))}
@@ -70,20 +45,13 @@ Workspace.Container = styled.div`
   height: 100%;
 `;
 
-Workspace.MaximizedWindow = styled.div`
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-
-  background: #232323;
-`;
-
 Workspace.Windows = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 2;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 `;
 
 Workspace.ChooseTable = styled.div`
@@ -92,7 +60,7 @@ Workspace.ChooseTable = styled.div`
   left: 0;
   width: 150px;
   height: 100%;
-  z-index: 3;
+  z-index: 2;
   transform: translateX(calc(-100% + 10px));
 
   background-color: rgb(0, 119, 255);
