@@ -1,4 +1,4 @@
-import { utcDay, utcMonth } from 'd3-time';
+import { utcDay, utcHour, utcMonth } from 'd3-time';
 import { all, put, select, takeLatest } from 'redux-saga/effects';
 import { PredictionTable } from '../prediction-table/model';
 import { getTableById } from '../prediction-table/predictionTableReducer';
@@ -22,7 +22,7 @@ function* setTimescaleDataSaga(
   } else if (table.step.type === 'hours') {
     const value =
       table.step.value < 48 ? 7 * 24 : table.step.value * 2;
-    endDate = utcDay.offset(startDate, value);
+    endDate = utcHour.offset(startDate, value);
   } else if (table.step.type === 'month') {
     const value = table.step.value < 3 ? 6 : table.step.value * 2;
     endDate = utcMonth.offset(startDate, value);

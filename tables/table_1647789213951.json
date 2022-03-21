@@ -5,15 +5,10 @@
   "tags": "tag1 tag2",
   "startDate": "2022-02-28T00:00:00.000Z",
   "endDate": "2022-04-01T00:00:00.000Z",
-  "colorPalette": [
-    "#ff0095",
-    "#ff0000",
-    "#00ff40",
-    "#00ff11"
-  ],
+  "colorPalette": ["#ff0095", "#ff0000", "#00ff40", "#00ff11"],
   "step": {
-    "type": "hours",
-    "value": "6"
+    "type": "days",
+    "value": "15"
   },
   "createdAt": "2022-03-20T15:13:33.951Z",
   "id": "cda4d2c0-0dac-40b6-9419-dbf90b590be5"

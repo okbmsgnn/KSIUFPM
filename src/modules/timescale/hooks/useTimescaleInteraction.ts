@@ -25,6 +25,17 @@ export const useTimescaleInteraction = ({
     getTableById(state, { tableId })
   );
 
+  const stepDelta = React.useMemo(() => {
+    const milliseconds =
+      table.step.type === 'days'
+        ? 24 * 3600 * 1000
+        : table.step.type === 'hours'
+        ? 3600 * 1000
+        : 30 * 24 * 3600 * 1000;
+
+    return table.step.value * milliseconds;
+  }, [table]);
+
   const zoom = useZoom(
     {
       extremeDates: extremeDates ?? {
@@ -32,8 +43,9 @@ export const useTimescaleInteraction = ({
         max: new Date(),
       },
       ySize: 1080,
+      tableId,
     },
-    [extremeDates, timescaleSize.height, table]
+    [extremeDates, timescaleSize.height, tableId]
   );
 
   const drag = useDrag({
@@ -44,8 +56,9 @@ export const useTimescaleInteraction = ({
   return React.useMemo(
     () => ({
       ...drag,
-      extremeDates,
+      ...zoom,
+      stepDelta,
     }),
-    [drag, extremeDates]
+    [drag, zoom, stepDelta]
   );
 };
