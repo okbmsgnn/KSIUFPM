@@ -1,9 +1,17 @@
-import { utcDay, utcHour, utcMonth } from 'd3-time';
+import { utcMillisecond } from 'd3-time';
 import { all, put, select, takeLatest } from 'redux-saga/effects';
+import { IRange } from '../../types/IRange';
 import { PredictionTable } from '../prediction-table/model';
 import { getTableById } from '../prediction-table/predictionTableReducer';
 import { OPEN_WINDOW } from '../workspace/workspaceActions';
-import { setExtremeDates } from './timescaleActions';
+import {
+  RESET_ZOOM,
+  setExtremeDates,
+  ZOOM_IN,
+  ZOOM_OUT,
+} from './timescaleActions';
+import { getExtremeDates, getMsDelta } from './timescaleReducer';
+import { calculateExtremeDatesFor } from './utils/calculateExtremeDates';
 
 function* setTimescaleDataSaga(
   action: any
@@ -13,32 +21,55 @@ function* setTimescaleDataSaga(
     tableId: window.id,
   });
 
-  const startDate = table.startDate ?? new Date();
-  let endDate: Date = startDate;
+  const dates = calculateExtremeDatesFor(table, 30);
 
-  if (table.step.type === 'days') {
-    const value = table.step.value < 3 ? 30 : table.step.value * 2;
-    endDate = utcDay.offset(startDate, value);
-  } else if (table.step.type === 'hours') {
-    const value =
-      table.step.value < 48 ? 7 * 24 : table.step.value * 2;
-    endDate = utcHour.offset(startDate, value);
-  } else if (table.step.type === 'month') {
-    const value = table.step.value < 3 ? 6 : table.step.value * 2;
-    endDate = utcMonth.offset(startDate, value);
+  yield put(
+    setExtremeDates({
+      dates,
+      tableId: table.id,
+    })
+  );
+}
+
+function* zoomTimescaleSaga(action: any): Generator<any, any, any> {
+  const tableId = action.payload;
+  const table: PredictionTable = yield select(getTableById, {
+    tableId,
+  });
+  const extremeDates: IRange<Date> = yield select(getExtremeDates, {
+    tableId,
+  });
+  const msDelta = yield select(getMsDelta, { tableId });
+  const zoomValue = msDelta * 0.1;
+
+  let dates = { ...extremeDates };
+
+  if (action.type === ZOOM_IN) {
+    dates = {
+      min: utcMillisecond.offset(dates.min, zoomValue),
+      max: utcMillisecond.offset(dates.max, -zoomValue),
+    };
+  } else if (action.type === ZOOM_OUT) {
+    dates = {
+      min: utcMillisecond.offset(dates.min, -zoomValue),
+      max: utcMillisecond.offset(dates.max, zoomValue),
+    };
+  } else {
+    const defaultDates = calculateExtremeDatesFor(table, 30);
+    dates = defaultDates;
   }
 
   yield put(
     setExtremeDates({
-      dates: {
-        max: endDate,
-        min: startDate,
-      },
-      tableId: window.id,
+      dates,
+      tableId,
     })
   );
 }
 
 export function* timescaleSaga() {
-  yield all([takeLatest(OPEN_WINDOW, setTimescaleDataSaga)]);
+  yield all([
+    takeLatest(OPEN_WINDOW, setTimescaleDataSaga),
+    takeLatest([ZOOM_IN, ZOOM_OUT, RESET_ZOOM], zoomTimescaleSaga),
+  ]);
 }

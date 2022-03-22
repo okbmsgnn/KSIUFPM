@@ -72,7 +72,7 @@ const App = () => {
   }, []);
 
   return (
-    <RouterProvider initialLocation="/workspace">
+    <RouterProvider initialLocation="/new-project">
       <App.Container>
         <Route route="/new-project">
           <CreateTableForm />

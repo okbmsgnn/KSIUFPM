@@ -42,7 +42,7 @@ export const useTimescaleInteraction = ({
         min: new Date(),
         max: new Date(),
       },
-      ySize: 1080,
+      ySize: timescaleSize.height,
       tableId,
     },
     [extremeDates, timescaleSize.height, tableId]

@@ -27,7 +27,7 @@ export const useDrag = ({ tableId, zoom }: DragProps) => {
           tableId,
           dates: {
             min: newExtremeMin,
-            max: timeMillisecond.offset(newExtremeMin, zoom.delta),
+            max: timeMillisecond.offset(newExtremeMin, zoom.msDelta),
           },
         })
       );

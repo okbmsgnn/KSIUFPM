@@ -42,13 +42,13 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
   );
 
   const zones = React.useMemo(() => {
-    const { delta, stepDelta, extremeDates } = interaction;
+    const { msDelta, stepDelta, extremeDates } = interaction;
 
     const missingTime = extremeDates.min.getTime() % stepDelta;
 
     return Array.from(
       {
-        length: Math.ceil((delta + missingTime) / stepDelta),
+        length: Math.ceil((msDelta + missingTime) / stepDelta),
       },
       (_, idx) => {
         const start = utcMillisecond.offset(

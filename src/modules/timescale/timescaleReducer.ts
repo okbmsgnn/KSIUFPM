@@ -6,6 +6,7 @@ import {
   SET_TIMESCALE_SIZE,
 } from './timescaleActions';
 import { createSelector } from 'reselect';
+import { utcMillisecond } from 'd3-time';
 
 export const STATE_KEY = 'timescale' as const;
 
@@ -50,4 +51,17 @@ export const getExtremeDates = createSelector(
       max: new Date(),
       min: new Date(),
     }
+);
+
+export const getMsDelta = createSelector(
+  getState,
+  (_: any, props: { tableId: string }) => props.tableId,
+  (state, tableId) => {
+    const dates = state.extremeDates[tableId] ?? {
+      max: new Date(),
+      min: new Date(),
+    };
+
+    return utcMillisecond.count(dates.min, dates.max);
+  }
 );

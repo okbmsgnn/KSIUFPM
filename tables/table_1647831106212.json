@@ -1,0 +1,20 @@
+{
+  "name": "Colors",
+  "localName": "table_1647831076005.json",
+  "description": "",
+  "tags": "",
+  "startDate": null,
+  "endDate": null,
+  "colorPalette": [
+    "#2051b1",
+    "#eb8f0f",
+    "#86aff7",
+    "#9a86f7"
+  ],
+  "step": {
+    "type": "hours",
+    "value": "3"
+  },
+  "createdAt": "2022-03-21T02:51:46.212Z",
+  "id": "1d305097-912a-41d5-9035-2914f43ebca4"
+}
