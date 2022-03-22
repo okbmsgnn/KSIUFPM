@@ -80,6 +80,10 @@ export const useZoom = (
       return new Date(extremeDates.min.getTime() + time);
     };
 
+    scale.convert = (y: number) => {
+      return (msDelta / ySize) * y;
+    };
+
     return scale;
   }, [msDelta, extremeDates, ySize]);
 
