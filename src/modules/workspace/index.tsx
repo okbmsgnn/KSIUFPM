@@ -40,6 +40,18 @@ export const Workspace = () => {
 
       {GhostArea}
 
+      <Workspace.Workspace>
+        <rect
+          x="0"
+          y="0"
+          width="100%"
+          height="100%"
+          fill="#eeffff"
+          stroke="#000"
+          strokeWidth="2"
+        />
+      </Workspace.Workspace>
+
       <Workspace.ChooseTable>
         {tables.map((t) => (
           <div
@@ -64,14 +76,24 @@ export const Workspace = () => {
 Workspace.Container = styled.div`
   width: 100%;
   height: 100%;
+
+  background: #a8a8a8;
+`;
+
+Workspace.Workspace = styled.svg`
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: calc(100% - 40px);
+  height: calc(100% - 40px);
 `;
 
 Workspace.Windows = styled.div`
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 20px;
+  left: 20px;
+  width: calc(100% - 40px);
+  height: calc(100% - 40px);
   z-index: 1;
 `;
 

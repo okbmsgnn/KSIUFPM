@@ -14,6 +14,6 @@ export const createWindow = (options: {
     index: -1,
     state: options.state ?? WindowState.Normal,
     location: options.location ?? { x: 0, y: 0 },
-    size: options.size ?? { width: 300, height: 300 },
+    size: options.size ?? { width: 400, height: 400 },
   };
 };

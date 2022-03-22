@@ -14,6 +14,8 @@ interface WindowProps {
   toggleGhostAreaVisibility: (value: boolean) => void;
 }
 
+const globalWindow = window;
+
 const calculateInitialLocation = (
   location: IPoint,
   maximized: boolean
@@ -74,7 +76,37 @@ export const Window = ({
         locate(location);
       },
       onDragTick: (location) => {
-        setIsMaximizing(location.y <= 20);
+        if (!containerRef.current) return;
+        const newLocation = { ...location };
+        if (location.x < 2) newLocation.x = 2;
+        if (location.y < 2) newLocation.y = 2;
+        if (
+          location.x >
+          globalWindow.innerWidth -
+            40 -
+            containerRef.current.offsetWidth -
+            2
+        )
+          newLocation.x =
+            globalWindow.innerWidth -
+            40 -
+            containerRef.current.offsetWidth -
+            2;
+        if (
+          location.y >
+          globalWindow.innerHeight -
+            40 -
+            containerRef.current.offsetHeight -
+            2
+        )
+          newLocation.y =
+            globalWindow.innerHeight -
+            40 -
+            containerRef.current.offsetHeight -
+            2;
+
+        setIsMaximizing(newLocation.y <= 20);
+        return newLocation;
       },
     },
     [maximized, isMaximizing, window.size]

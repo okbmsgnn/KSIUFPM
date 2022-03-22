@@ -4,7 +4,7 @@ import { IPoint } from '../types/IPoint';
 interface DragProps {
   onDragStart?: () => void;
   onDragStarted?: (event: { pivot: IPoint }) => void | IPoint;
-  onDragTick?: (location: IPoint) => void;
+  onDragTick?: (location: IPoint) => void | IPoint;
   onDragEnd?: (location: IPoint) => void;
   initialLocation?: IPoint;
 }
@@ -76,8 +76,8 @@ export const useDrag = (props: DragProps = {}, deps?: any[]) => {
         }
       }
 
-      onDragTick?.call(null, newLocation);
-      setLocation(newLocation);
+      const modifiedLocation = onDragTick?.call(null, newLocation);
+      setLocation(modifiedLocation ?? newLocation);
     },
     [pivot, location]
   );

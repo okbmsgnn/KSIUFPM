@@ -132,9 +132,10 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
   }, [activeWindow, interaction.yScale, tableId]);
 
   const getRowColor = React.useCallback(
-    (z: { start: Date; end: Date }) => {
-      const index =
-        Math.floor(z.start.getTime() / interaction.stepDelta) % 2;
+    (startDate?: Date, idx = 0) => {
+      const index = startDate
+        ? Math.floor(startDate.getTime() / interaction.stepDelta) % 2
+        : idx;
       const hex = table.colorPalette[index];
       const hsl = convert.hex.hsl(hex);
 
@@ -151,26 +152,75 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
       onMouseDown={interaction.startDrag}
       ref={(value) => (container.current = value)}
     >
-      {zones.map((z) => (
-        <Timescale.Step
-          key={z.start.toISOString()}
-          style={{
-            position: 'absolute',
-            top: interaction.yScale(z.start),
-            left: 0,
-            height: zoneHeight,
-            width: '100%',
-            background: getRowColor(z),
-            borderTop: '1px solid #ffffff80',
-            boxSizing: 'border-box',
-            color: '#00000060',
-            fontFamily: 'Franklin Gothic',
-            fontSize: 14,
-          }}
-        >
-          {timeFormat('%m/%d/%Y %H:%M:%S')(z.start)}
-        </Timescale.Step>
-      ))}
+      <svg width="100%" height="100%">
+        <defs>
+          <linearGradient
+            id={`gradient_${table.id}`}
+            x1="50%"
+            y1="0%"
+            x2="50%"
+            y2="100%"
+          >
+            <stop
+              offset="0%"
+              style={{
+                stopColor: getRowColor(undefined, 0),
+              }}
+            />
+            <stop
+              offset="100%"
+              style={{
+                stopColor: getRowColor(undefined, 1),
+              }}
+            />
+          </linearGradient>
+        </defs>
+
+        {zoneHeight <= 5 ? (
+          <rect
+            width="100%"
+            height="100%"
+            x="0"
+            y="0"
+            style={{
+              fill: `url(#gradient_${table.id})`,
+            }}
+          />
+        ) : (
+          zones.map((zone) => (
+            <>
+              <line
+                x1="0"
+                x2="100%"
+                y1={interaction.yScale(zone.start)}
+                y2={interaction.yScale(zone.start)}
+                strokeWidth="1"
+                stroke="#000000"
+              />
+              <rect
+                width="100%"
+                height={zoneHeight}
+                x="0"
+                y={interaction.yScale(zone.start)}
+                style={{
+                  fill: getRowColor(zone.start),
+                }}
+              />
+              {zoneHeight > 12 && (
+                <text
+                  fill="#000000"
+                  font-size="14"
+                  font-family="Franklin Gothic"
+                  x="10"
+                  y={interaction.yScale(zone.start) + 14}
+                >
+                  {timeFormat('%m/%d/%Y %H:%M:%S')(zone.start)}
+                </text>
+              )}
+            </>
+          ))
+        )}
+      </svg>
     </Timescale.Container>
   );
 };
