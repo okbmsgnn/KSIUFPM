@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { useRouter } from '../../context/router';
 import {
   getIndexedPredictionTables,
   getSortedPredictionTables,
@@ -12,6 +13,7 @@ import { getWindows, getWindowsAsArray } from './workspaceReducer';
 
 export const Workspace = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
   const { GhostArea, setGhostAreaColor, toggleGhostAreaVisibility } =
     useGhostArea({
       override: [, 75, 75],
@@ -21,6 +23,19 @@ export const Workspace = () => {
   const indexedTables = useSelector(getIndexedPredictionTables);
   const windows = useSelector(getWindowsAsArray);
   const indexedWindows = useSelector(getWindows);
+
+  React.useEffect(() => {
+    const handler = (e: any) => {
+      if (e.key !== 'Escape') return;
+      router.redirectTo('/new-project');
+    };
+
+    document.addEventListener('keydown', handler);
+
+    return () => {
+      document.removeEventListener('keydown', handler);
+    };
+  }, [router]);
 
   return (
     <Workspace.Container>

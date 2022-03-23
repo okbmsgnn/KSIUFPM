@@ -7,8 +7,6 @@ export const SET_TIMESCALE_SIZE =
   `${namespace}/SET_TIMESCALE_SIZE` as const;
 export const SET_EXTREME_DATES =
   `${namespace}/SET_EXTREME_DATES` as const;
-export const MOVE_EXTREME_DATES_BY =
-  `${namespace}/MOVE_EXTREME_DATES_BY` as const;
 export const ZOOM_IN = `${namespace}/ZOOM_IN` as const;
 export const ZOOM_OUT = `${namespace}/ZOOM_OUT` as const;
 export const RESET_ZOOM = `${namespace}/RESET_ZOOM` as const;
@@ -26,14 +24,6 @@ export const setExtremeDates = (payload: {
   dates: IRange<Date>;
 }) => ({
   type: SET_EXTREME_DATES,
-  payload,
-});
-
-export const moveExtremeDatesBy = (payload: {
-  tableId: string;
-  ms: number;
-}) => ({
-  type: MOVE_EXTREME_DATES_BY,
   payload,
 });
 
@@ -58,5 +48,4 @@ export const timescaleActions = {
   resetZoom,
   setTimescaleSize,
   setExtremeDates,
-  moveExtremeDatesBy,
 };

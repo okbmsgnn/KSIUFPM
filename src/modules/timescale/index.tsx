@@ -6,12 +6,9 @@ import { useComponentSize } from '../../hooks/useComponentSize';
 import { overrideHSL } from '../../utils/color';
 import { getTableById } from '../prediction-table/predictionTableReducer';
 import { useTimescaleInteraction } from './hooks/useTimescaleInteraction';
-import {
-  moveExtremeDatesBy,
-  setTimescaleSize,
-} from './timescaleActions';
+import { setTimescaleSize } from './timescaleActions';
 import convert from 'color-convert';
-import { timeFormat } from 'd3-time-format';
+import { utcFormat } from 'd3-time-format';
 import { getActiveWindow } from '../workspace/workspaceReducer';
 
 interface TimescaleProps {
@@ -115,13 +112,7 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
   React.useEffect(() => {
     if (activeWindow?.id !== tableId) return;
     const handler = (e: WheelEvent) => {
-      console.log(e);
-      dispatch(
-        moveExtremeDatesBy({
-          tableId,
-          ms: interaction.yScale.convert(e.deltaY / 6),
-        })
-      );
+      interaction.moveBy(interaction.yScale.convert(e.deltaY / 4));
     };
 
     window.addEventListener('wheel', handler);
@@ -129,7 +120,7 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
     return () => {
       window.removeEventListener('wheel', handler);
     };
-  }, [activeWindow, interaction.yScale, tableId]);
+  }, [activeWindow, interaction.yScale, interaction.moveBy, tableId]);
 
   const getRowColor = React.useCallback(
     (startDate?: Date, idx = 0) => {
@@ -214,7 +205,7 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
                   x="10"
                   y={interaction.yScale(zone.start) + 14}
                 >
-                  {timeFormat('%m/%d/%Y %H:%M:%S')(zone.start)}
+                  {utcFormat('%m/%d/%Y %H:%M:%S')(zone.start)}
                 </text>
               )}
             </>

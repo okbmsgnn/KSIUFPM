@@ -5,7 +5,6 @@ import { PredictionTable } from '../prediction-table/model';
 import { getTableById } from '../prediction-table/predictionTableReducer';
 import { OPEN_WINDOW } from '../workspace/workspaceActions';
 import {
-  MOVE_EXTREME_DATES_BY,
   RESET_ZOOM,
   setExtremeDates,
   ZOOM_IN,
@@ -68,29 +67,9 @@ function* zoomTimescaleSaga(action: any): Generator<any, any, any> {
   );
 }
 
-function* moveTimescaleSaga(action: any): Generator<any, any, any> {
-  const { tableId, ms } = action.payload;
-  const extremeDates: IRange<Date> = yield select(getExtremeDates, {
-    tableId,
-  });
-
-  const dates = { ...extremeDates };
-
-  dates.min = utcMillisecond.offset(dates.min, ms);
-  dates.max = utcMillisecond.offset(dates.max, ms);
-
-  yield put(
-    setExtremeDates({
-      dates,
-      tableId,
-    })
-  );
-}
-
 export function* timescaleSaga() {
   yield all([
     takeLatest(OPEN_WINDOW, setTimescaleDataSaga),
     takeLatest([ZOOM_IN, ZOOM_OUT, RESET_ZOOM], zoomTimescaleSaga),
-    takeLatest(MOVE_EXTREME_DATES_BY, moveTimescaleSaga),
   ]);
 }

@@ -1,0 +1,20 @@
+{
+  "name": "Colors red blue",
+  "localName": "table_1647831106212.json",
+  "description": "",
+  "tags": "",
+  "startDate": "2022-03-01T00:00:00.000Z",
+  "endDate": "2022-03-31T00:00:00.000Z",
+  "colorPalette": [
+    "#c13815",
+    "#0040ff",
+    "#86aff7",
+    "#9a86f7"
+  ],
+  "step": {
+    "type": "hours",
+    "value": "5"
+  },
+  "createdAt": "2022-03-22T23:44:35.955Z",
+  "id": "f0273100-9ec7-4579-aba2-a1b8903cdca8"
+}

@@ -1,0 +1,20 @@
+{
+  "name": "4 hours step",
+  "localName": "table_1647992675955.json",
+  "description": "",
+  "tags": "",
+  "startDate": "2022-03-01T00:00:00.000Z",
+  "endDate": "2022-03-31T00:00:00.000Z",
+  "colorPalette": [
+    "#c13815",
+    "#0040ff",
+    "#86aff7",
+    "#9a86f7"
+  ],
+  "step": {
+    "type": "hours",
+    "value": "4"
+  },
+  "createdAt": "2022-03-23T21:08:20.813Z",
+  "id": "34ed31e4-10a8-4b16-8ac0-901db07ca747"
+}
