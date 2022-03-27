@@ -1,4 +1,4 @@
-import { utcDay, utcMillisecond } from 'd3-time';
+import { utcMillisecond } from 'd3-time';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRange } from '../../../types/IRange';
@@ -33,18 +33,16 @@ export const useDrag = ({ tableId, zoom }: DragProps) => {
         table.startDate.getTime() <= newExtremeMin.getTime();
       const isValidMax =
         !table.endDate ||
-        utcDay.offset(table.endDate, 1).getTime() >=
-          newExtremeMax.getTime();
+        table.endDate.getTime() >= newExtremeMax.getTime();
 
       let dates: IRange<Date> | null = null;
 
       if (isValidMin && isValidMax) {
         dates = { min: newExtremeMin, max: newExtremeMax };
       } else if (isValidMin && table.endDate) {
-        const end = utcDay.offset(table.endDate, 1);
         dates = {
-          min: utcMillisecond.offset(end, -zoom.msDelta),
-          max: end,
+          min: utcMillisecond.offset(table.endDate, -zoom.msDelta),
+          max: table.endDate,
         };
       } else if (isValidMax && table.startDate) {
         dates = {

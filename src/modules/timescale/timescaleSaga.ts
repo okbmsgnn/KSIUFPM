@@ -11,7 +11,8 @@ import {
   ZOOM_OUT,
 } from './timescaleActions';
 import { getExtremeDates, getMsDelta } from './timescaleReducer';
-import { calculateExtremeDatesFor } from './utils/calculateExtremeDates';
+import { calculateExtremeDatesFor } from './utils/calculateExtremeDatesFor';
+import { getTimeIntervalFor } from './utils/getTimeIntervalFor';
 
 function* setTimescaleDataSaga(
   action: any
@@ -21,7 +22,8 @@ function* setTimescaleDataSaga(
     tableId: window.id,
   });
 
-  const dates = calculateExtremeDatesFor(table, 30);
+  const timeInterval = getTimeIntervalFor(table);
+  const dates = calculateExtremeDatesFor(table, timeInterval, 30);
 
   yield put(
     setExtremeDates({
@@ -36,6 +38,7 @@ function* zoomTimescaleSaga(action: any): Generator<any, any, any> {
   const table: PredictionTable = yield select(getTableById, {
     tableId,
   });
+  const timeInterval = getTimeIntervalFor(table);
   const extremeDates: IRange<Date> = yield select(getExtremeDates, {
     tableId,
   });
@@ -50,12 +53,25 @@ function* zoomTimescaleSaga(action: any): Generator<any, any, any> {
       max: utcMillisecond.offset(dates.max, -zoomValue),
     };
   } else if (action.type === ZOOM_OUT) {
+    const min = utcMillisecond.offset(dates.min, -zoomValue);
+    const max = utcMillisecond.offset(dates.max, zoomValue);
+
     dates = {
-      min: utcMillisecond.offset(dates.min, -zoomValue),
-      max: utcMillisecond.offset(dates.max, zoomValue),
+      min:
+        table.startDate && min.getTime() < table.startDate.getTime()
+          ? table.startDate
+          : min,
+      max:
+        table.endDate && max.getTime() > table.endDate.getTime()
+          ? table.endDate
+          : max,
     };
   } else {
-    const defaultDates = calculateExtremeDatesFor(table, 30);
+    const defaultDates = calculateExtremeDatesFor(
+      table,
+      timeInterval,
+      30
+    );
     dates = defaultDates;
   }
 

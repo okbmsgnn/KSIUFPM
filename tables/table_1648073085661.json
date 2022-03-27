@@ -1,0 +1,15 @@
+{
+  "name": "7 days step",
+  "localName": "table_1648069700813.json",
+  "description": "",
+  "tags": "",
+  "startDate": "2022-03-01T00:00:00.000Z",
+  "endDate": "2023-03-31T00:00:00.000Z",
+  "colorPalette": ["#c13815", "#0040ff", "#86aff7", "#9a86f7"],
+  "step": {
+    "type": "days",
+    "value": "7"
+  },
+  "createdAt": "2022-03-23T22:04:45.661Z",
+  "id": "76490a38-5f8e-4d83-80c6-09b367896dd5"
+}

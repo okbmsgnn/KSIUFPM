@@ -10,8 +10,10 @@ import {
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRange } from '../../../types/IRange';
+import { getTableById } from '../../prediction-table/predictionTableReducer';
 import { resetZoom, zoomIn, zoomOut } from '../timescaleActions';
 import { getMsDelta } from '../timescaleReducer';
+import { getTimeIntervalFor } from '../utils/getTimeIntervalFor';
 
 type ZoomLevel = {
   minRange: number;
@@ -56,6 +58,14 @@ export const useZoom = (
   deps: any[] = []
 ) => {
   const dispatch = useDispatch();
+  const table = useSelector((state) =>
+    getTableById(state, { tableId })
+  );
+
+  const timeInterval = React.useMemo(
+    () => getTimeIntervalFor(table),
+    [table]
+  );
 
   const msDelta = useSelector((state) =>
     getMsDelta(state, { tableId })
@@ -97,7 +107,16 @@ export const useZoom = (
       resetZoom: () => dispatch(resetZoom(tableId)),
       zoomIn: () => dispatch(zoomIn(tableId)),
       zoomOut: () => dispatch(zoomOut(tableId)),
+      timeInterval,
     }),
-    [zoomLevel, yScale, msDelta, extremeDates, ySize, ...deps]
+    [
+      zoomLevel,
+      yScale,
+      msDelta,
+      extremeDates,
+      ySize,
+      timeInterval,
+      ...deps,
+    ]
   );
 };

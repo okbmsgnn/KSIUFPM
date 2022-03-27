@@ -1,0 +1,15 @@
+{
+  "name": "3 days",
+  "localName": "table_1648338965868.json",
+  "description": "",
+  "tags": "",
+  "startDate": "2022-03-01T00:00:00.000Z",
+  "endDate": "2022-03-04T00:00:00.000Z",
+  "colorPalette": ["#b0f4ff", "#d7ffbf", "#86aff7", "#9a86f7"],
+  "step": {
+    "type": "days",
+    "value": 1
+  },
+  "createdAt": "2022-03-26T23:56:16.983Z",
+  "id": "53820017-b3ab-477b-9d12-a5db07c0b384"
+}
