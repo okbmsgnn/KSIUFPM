@@ -10,6 +10,8 @@ import { setTimescaleSize } from './timescaleActions';
 import convert from 'color-convert';
 import { utcFormat } from 'd3-time-format';
 import { getActiveWindow } from '../workspace/workspaceReducer';
+import { useShortcut } from '../../hooks/useShortcut';
+import { useWheelEvent } from '../../hooks/useWheelEvent';
 
 interface TimescaleProps {
   tableId: string;
@@ -85,42 +87,48 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
     );
   }, [tableId, timescaleSize]);
 
-  React.useEffect(() => {
-    if (!activeWindow || activeWindow.id !== tableId) return;
-    const handler = (e: any) => {
-      if (e.code === 'KeyQ') {
-        interaction.zoomIn();
-      } else if (e.code === 'KeyW') {
-        interaction.zoomOut();
-      } else if (e.code === 'KeyE') {
-        interaction.resetZoom();
-      }
-    };
+  useShortcut({
+    key: 'Q',
+    callback: interaction.zoomIn,
+    event: 'keydown',
+    ignore: !activeWindow || activeWindow.id !== tableId,
+  });
+  useShortcut({
+    key: 'W',
+    callback: interaction.zoomOut,
+    event: 'keydown',
+    ignore: !activeWindow || activeWindow.id !== tableId,
+  });
+  useShortcut({
+    key: 'E',
+    callback: interaction.resetZoom,
+    event: 'keydown',
+    ignore: !activeWindow || activeWindow.id !== tableId,
+  });
 
-    document.addEventListener('keydown', handler);
-    return () => {
-      document.removeEventListener('keydown', handler);
-    };
-  }, [
-    tableId,
-    activeWindow,
-    interaction.zoomIn,
-    interaction.zoomOut,
-    interaction.resetZoom,
-  ]);
+  useWheelEvent(
+    {
+      onWheel: (e) => {
+        if (activeWindow?.id !== tableId) return;
 
-  React.useEffect(() => {
-    if (activeWindow?.id !== tableId) return;
-    const handler = (e: WheelEvent) => {
-      interaction.moveBy(interaction.yScale.convert(e.deltaY / 4));
-    };
+        interaction.moveBy(interaction.yScale.convert(e.deltaY / 4));
+      },
+      onCtrlWheel: (e) => {
+        if (!activeWindow || activeWindow.id !== tableId) return;
 
-    window.addEventListener('wheel', handler);
-
-    return () => {
-      window.removeEventListener('wheel', handler);
-    };
-  }, [activeWindow, interaction.yScale, interaction.moveBy, tableId]);
+        if (e.deltaY >= 0) interaction.zoomOut();
+        else interaction.zoomIn();
+      },
+    },
+    [
+      activeWindow?.id,
+      tableId,
+      interaction.moveBy,
+      interaction.zoomOut,
+      interaction.zoomIn,
+      interaction.yScale,
+    ]
+  );
 
   const getRowColor = React.useCallback(
     (startDate?: Date, idx = 0) => {
