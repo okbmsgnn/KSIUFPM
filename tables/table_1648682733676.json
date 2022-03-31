@@ -1,0 +1,20 @@
+{
+  "name": "1 day step to may",
+  "localName": "table_1648563496157.json",
+  "description": "",
+  "tags": "",
+  "startDate": "2022-03-01T00:00:00.000Z",
+  "endDate": "2022-05-31T00:00:00.000Z",
+  "colorPalette": [
+    "#0dcae7",
+    "#60df16",
+    "#86aff7",
+    "#9a86f7"
+  ],
+  "step": {
+    "type": "days",
+    "value": "1"
+  },
+  "createdAt": "2022-03-30T23:25:33.676Z",
+  "id": "f4d66ecb-c92c-4683-b428-4a590eb15da1"
+}

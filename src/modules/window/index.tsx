@@ -216,6 +216,7 @@ Window.TitleBar = styled.div`
 
 Window.Content = styled.div`
   word-break: break-word;
+  position: relative;
 `;
 
 Window.Name = styled.div`

@@ -1,0 +1,20 @@
+{
+  "name": "1 hour step to may",
+  "localName": "table_1648682733676.json",
+  "description": "",
+  "tags": "",
+  "startDate": "2022-03-01T00:00:00.000Z",
+  "endDate": "2022-05-31T00:00:00.000Z",
+  "colorPalette": [
+    "#0dcae7",
+    "#60df16",
+    "#86aff7",
+    "#9a86f7"
+  ],
+  "step": {
+    "type": "hours",
+    "value": "1"
+  },
+  "createdAt": "2022-03-31T02:03:05.724Z",
+  "id": "91614ba5-e43e-479d-95ca-7dbd081e96ea"
+}

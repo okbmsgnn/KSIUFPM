@@ -56,9 +56,16 @@ export const useDrag = ({ tableId, zoom }: DragProps) => {
     [zoom, table]
   );
 
-  const startDrag = React.useCallback((e: any) => {
-    setIsDragging(true);
-  }, []);
+  const startDrag = React.useCallback(
+    (e: any) => {
+      console.log(
+        e.nativeEvent.offsetY,
+        zoom.yScale.invert(e.nativeEvent.offsetY)
+      );
+      setIsDragging(true);
+    },
+    [zoom]
+  );
 
   const moveBy = React.useCallback(
     (ms: number) => {

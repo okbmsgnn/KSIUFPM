@@ -1,4 +1,4 @@
-import { utcMillisecond } from 'd3-time';
+import { utcHour, utcMillisecond, utcSecond } from 'd3-time';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -12,6 +12,7 @@ import { utcFormat } from 'd3-time-format';
 import { getActiveWindow } from '../workspace/workspaceReducer';
 import { useShortcut } from '../../hooks/useShortcut';
 import { useWheelEvent } from '../../hooks/useWheelEvent';
+import { TableObjectsLayer } from '../table-objects-layer';
 
 interface TimescaleProps {
   tableId: string;
@@ -23,6 +24,19 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
   const container = React.useRef<HTMLElement | null>(null);
   const timescaleSize = useComponentSize(container.current);
   const activeWindow = useSelector(getActiveWindow);
+
+  const [now, setNow] = React.useState(
+    utcHour.offset(new Date('2022-03-26T23:00:00'), 0)
+  );
+
+  React.useEffect(() => {
+    const id = setInterval(
+      () => setNow((prev) => utcSecond.offset(prev, 10)),
+      50
+    );
+
+    return () => clearInterval(id);
+  }, []);
 
   const table = useSelector((state) =>
     getTableById(state, { tableId })
@@ -47,6 +61,22 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
     const { msDelta, stepDelta, extremeDates } = interaction;
 
     const missingTime = extremeDates.min.getTime() % stepDelta;
+
+    const intervals = utcMillisecond
+      .range(
+        extremeDates.min,
+        utcMillisecond.offset(extremeDates.max, stepDelta),
+        stepDelta
+      )
+      .map((d) => utcMillisecond.offset(d, -missingTime));
+
+    return intervals.reduce((acc, e, idx) => {
+      acc.push({
+        start: e,
+        end: intervals[idx + 1] ?? extremeDates.max,
+      });
+      return acc;
+    }, []);
 
     return Array.from(
       {
@@ -145,6 +175,12 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
     [table, interaction.stepDelta]
   );
 
+  function isDST(d) {
+    let jan = new Date(d.getFullYear(), 0, 1).getTimezoneOffset();
+    let jul = new Date(d.getFullYear(), 6, 1).getTimezoneOffset();
+    return Math.max(jan, jul) !== d.getTimezoneOffset();
+  }
+
   return (
     <Timescale.Container
       cursor={interaction.isDragging ? 'grabbing' : 'grab'}
@@ -174,7 +210,7 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
             />
           </linearGradient>
         </defs>
-
+        {console.log(zones)}
         {zoneHeight <= 5 ? (
           <rect
             width="100%"
@@ -219,7 +255,22 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
             </>
           ))
         )}
+
+        <line
+          x1="0"
+          x2="100%"
+          y1={interaction.yScale(
+            isDST(now) ? utcHour.offset(now, 1) : now
+          )}
+          y2={interaction.yScale(
+            isDST(now) ? utcHour.offset(now, 1) : now
+          )}
+          strokeWidth="1"
+          stroke="red"
+        />
       </svg>
+
+      <TableObjectsLayer tableId={tableId} />
     </Timescale.Container>
   );
 };

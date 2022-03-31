@@ -1,8 +1,8 @@
+import { scaleUtc } from 'd3-scale';
 import {
   TimeInterval,
   utcDay,
   utcHour,
-  utcMillisecond,
   utcMonth,
   utcWeek,
   utcYear,
@@ -80,15 +80,15 @@ export const useZoom = (
   }, [msDelta]);
 
   const yScale = React.useMemo(() => {
+    const timeScale = scaleUtc()
+      .range([0, ySize])
+      .domain([extremeDates.min, extremeDates.max]);
+
     const scale = (date: Date) => {
-      const time = utcMillisecond.count(extremeDates.min, date);
-      return (time * ySize) / msDelta;
+      return timeScale(new Date(date));
     };
 
-    scale.invert = (y: number) => {
-      const time = (msDelta / ySize) * y;
-      return new Date(extremeDates.min.getTime() + time);
-    };
+    scale.invert = timeScale.invert;
 
     scale.convert = (y: number) => {
       return (msDelta / ySize) * y;
