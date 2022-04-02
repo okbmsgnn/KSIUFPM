@@ -1,0 +1,20 @@
+{
+  "name": "to november 1 hour",
+  "localName": "table_1648692185724.json",
+  "description": "",
+  "tags": "",
+  "startDate": "2022-10-11T00:00:00.000Z",
+  "endDate": "2022-11-01T00:00:00.000Z",
+  "colorPalette": [
+    "#e70d2e",
+    "#bbff94",
+    "#86aff7",
+    "#9a86f7"
+  ],
+  "step": {
+    "type": "hours",
+    "value": "1"
+  },
+  "createdAt": "2022-04-02T00:27:23.397Z",
+  "id": "7801ab5b-e18c-438e-b762-cc5e09169ad8"
+}

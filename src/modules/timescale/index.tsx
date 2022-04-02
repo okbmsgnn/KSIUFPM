@@ -1,4 +1,4 @@
-import { utcHour, utcMillisecond, utcSecond } from 'd3-time';
+import { utcMillisecond } from 'd3-time';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -13,6 +13,7 @@ import { getActiveWindow } from '../workspace/workspaceReducer';
 import { useShortcut } from '../../hooks/useShortcut';
 import { useWheelEvent } from '../../hooks/useWheelEvent';
 import { TableObjectsLayer } from '../table-objects-layer';
+import NowIndicator from './components/NowIndicator';
 
 interface TimescaleProps {
   tableId: string;
@@ -24,20 +25,6 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
   const container = React.useRef<HTMLElement | null>(null);
   const timescaleSize = useComponentSize(container.current);
   const activeWindow = useSelector(getActiveWindow);
-
-  const [now, setNow] = React.useState(
-    utcHour.offset(new Date('2022-03-26T23:00:00'), 0)
-  );
-
-  React.useEffect(() => {
-    const id = setInterval(
-      () => setNow((prev) => utcSecond.offset(prev, 10)),
-      50
-    );
-
-    return () => clearInterval(id);
-  }, []);
-
   const table = useSelector((state) =>
     getTableById(state, { tableId })
   );
@@ -58,7 +45,7 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
   );
 
   const zones = React.useMemo(() => {
-    const { msDelta, stepDelta, extremeDates } = interaction;
+    const { stepDelta, extremeDates } = interaction;
 
     const missingTime = extremeDates.min.getTime() % stepDelta;
 
@@ -70,36 +57,15 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
       )
       .map((d) => utcMillisecond.offset(d, -missingTime));
 
-    return intervals.reduce((acc, e, idx) => {
-      acc.push({
-        start: e,
-        end: intervals[idx + 1] ?? extremeDates.max,
-      });
-      return acc;
-    }, []);
-
-    return Array.from(
-      {
-        length: Math.ceil((msDelta + missingTime) / stepDelta),
+    return intervals.reduce<{ start: Date; end: Date }[]>(
+      (acc, e, idx) => {
+        acc.push({
+          start: e,
+          end: intervals[idx + 1] ?? extremeDates.max,
+        });
+        return acc;
       },
-      (_, idx) => {
-        const start = utcMillisecond.offset(
-          extremeDates.min,
-          stepDelta * idx - missingTime
-        );
-        const end = utcMillisecond.offset(
-          start,
-          stepDelta * (idx + 1)
-        );
-
-        return {
-          start,
-          end:
-            end.getTime() >= extremeDates.max.getTime()
-              ? extremeDates.max
-              : end,
-        };
-      }
+      []
     );
   }, [interaction, table]);
 
@@ -117,18 +83,6 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
     );
   }, [tableId, timescaleSize]);
 
-  useShortcut({
-    key: 'Q',
-    callback: interaction.zoomIn,
-    event: 'keydown',
-    ignore: !activeWindow || activeWindow.id !== tableId,
-  });
-  useShortcut({
-    key: 'W',
-    callback: interaction.zoomOut,
-    event: 'keydown',
-    ignore: !activeWindow || activeWindow.id !== tableId,
-  });
   useShortcut({
     key: 'E',
     callback: interaction.resetZoom,
@@ -175,12 +129,6 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
     [table, interaction.stepDelta]
   );
 
-  function isDST(d) {
-    let jan = new Date(d.getFullYear(), 0, 1).getTimezoneOffset();
-    let jul = new Date(d.getFullYear(), 6, 1).getTimezoneOffset();
-    return Math.max(jan, jul) !== d.getTimezoneOffset();
-  }
-
   return (
     <Timescale.Container
       cursor={interaction.isDragging ? 'grabbing' : 'grab'}
@@ -210,7 +158,7 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
             />
           </linearGradient>
         </defs>
-        {console.log(zones)}
+
         {zoneHeight <= 5 ? (
           <rect
             width="100%"
@@ -241,6 +189,7 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
                   fill: getRowColor(zone.start),
                 }}
               />
+
               {zoneHeight > 12 && (
                 <text
                   fill="#000000"
@@ -256,18 +205,7 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
           ))
         )}
 
-        <line
-          x1="0"
-          x2="100%"
-          y1={interaction.yScale(
-            isDST(now) ? utcHour.offset(now, 1) : now
-          )}
-          y2={interaction.yScale(
-            isDST(now) ? utcHour.offset(now, 1) : now
-          )}
-          strokeWidth="1"
-          stroke="red"
-        />
+        <NowIndicator yScale={interaction.yScale} />
       </svg>
 
       <TableObjectsLayer tableId={tableId} />

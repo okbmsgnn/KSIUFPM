@@ -2,6 +2,7 @@ import { utcMillisecond } from 'd3-time';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRange } from '../../../types/IRange';
+import { DSTify } from '../../../utils/date';
 import { getTableById } from '../../prediction-table/predictionTableReducer';
 import { setExtremeDates } from '../../timescale/timescaleActions';
 import { useZoom } from './useZoom';
@@ -60,7 +61,7 @@ export const useDrag = ({ tableId, zoom }: DragProps) => {
     (e: any) => {
       console.log(
         e.nativeEvent.offsetY,
-        zoom.yScale.invert(e.nativeEvent.offsetY)
+        DSTify(zoom.yScale.invert(e.nativeEvent.offsetY), true)
       );
       setIsDragging(true);
     },

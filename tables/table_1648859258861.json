@@ -1,0 +1,15 @@
+{
+  "name": "to november 1 day",
+  "localName": "table_1648859243397.json",
+  "description": "",
+  "tags": "",
+  "startDate": "2022-10-11T00:00:00.000Z",
+  "endDate": "2022-11-15T00:00:00.000Z",
+  "colorPalette": ["#e70d2e", "#bbff94", "#86aff7", "#9a86f7"],
+  "step": {
+    "type": "days",
+    "value": "1"
+  },
+  "createdAt": "2022-04-02T00:27:38.861Z",
+  "id": "a6cc3c7a-5c51-487a-b433-5c84fbd20a2d"
+}

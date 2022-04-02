@@ -10,6 +10,7 @@ import {
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRange } from '../../../types/IRange';
+import { DSTify } from '../../../utils/date';
 import { getTableById } from '../../prediction-table/predictionTableReducer';
 import { resetZoom, zoomIn, zoomOut } from '../timescaleActions';
 import { getMsDelta } from '../timescaleReducer';
@@ -84,11 +85,9 @@ export const useZoom = (
       .range([0, ySize])
       .domain([extremeDates.min, extremeDates.max]);
 
-    const scale = (date: Date) => {
-      return timeScale(new Date(date));
-    };
+    const scale = (date: Date) => timeScale(date);
 
-    scale.invert = timeScale.invert;
+    scale.invert = (value: number): Date => timeScale.invert(value);
 
     scale.convert = (y: number) => {
       return (msDelta / ySize) * y;

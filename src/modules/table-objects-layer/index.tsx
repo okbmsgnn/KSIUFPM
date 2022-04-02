@@ -1,4 +1,7 @@
+import { utcMinute } from 'd3-time';
+import React from 'react';
 import styled from 'styled-components';
+import { DSTify } from '../../utils/date';
 import { TableObject } from '../table-object';
 import { useTimescaleInteraction } from '../timescale/hooks/useTimescaleInteraction';
 
@@ -17,7 +20,9 @@ export const TableObjectsLayer = ({
         contextMenu={[
           { action: () => alert('HELLO'), displayName: 'HELLO' },
         ]}
-        y={interaction.yScale(new Date('2022-03-27T01:15:00Z'))}
+        y={interaction.yScale(
+          DSTify(new Date('2022-03-28T03:00:00Z'))
+        )}
       />
     </TableObjectsLayer.Container>
   );

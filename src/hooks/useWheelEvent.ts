@@ -12,7 +12,7 @@ export const useWheelEvent = (
   const [isCtrlPressed, setIsCtrlPressed] = React.useState(false);
 
   const onKeyDown = React.useCallback((e: KeyboardEvent) => {
-    setIsCtrlPressed(true);
+    setIsCtrlPressed(e.ctrlKey);
   }, []);
 
   const onKeyUp = React.useCallback((e: KeyboardEvent) => {
