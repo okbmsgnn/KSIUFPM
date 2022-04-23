@@ -5,15 +5,15 @@ import styled from 'styled-components';
 import { useComponentSize } from '../../hooks/useComponentSize';
 import { overrideHSL } from '../../utils/color';
 import { getTableById } from '../prediction-table/predictionTableReducer';
-import { useTimescaleInteraction } from './hooks/useTimescaleInteraction';
 import { setTimescaleSize } from './timescaleActions';
 import convert from 'color-convert';
 import { utcFormat } from 'd3-time-format';
 import { getActiveWindow } from '../workspace/workspaceReducer';
 import { useShortcut } from '../../hooks/useShortcut';
 import { useWheelEvent } from '../../hooks/useWheelEvent';
-import { TableObjectsLayer } from '../table-objects-layer';
+import TableObjectsLayer from '../table-objects-layer';
 import NowIndicator from './components/NowIndicator';
+import { useTimescaleInteraction } from './context';
 
 interface TimescaleProps {
   tableId: string;
@@ -21,7 +21,7 @@ interface TimescaleProps {
 
 export const Timescale = ({ tableId }: TimescaleProps) => {
   const dispatch = useDispatch();
-  const interaction = useTimescaleInteraction({ tableId });
+  const interaction = useTimescaleInteraction();
   const container = React.useRef<HTMLElement | null>(null);
   const timescaleSize = useComponentSize(container.current);
   const activeWindow = useSelector(getActiveWindow);
@@ -31,21 +31,20 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
 
   const zoneHeight = React.useMemo(
     () =>
-      interaction.yScale(
+      interaction.zoom.yScale(
         utcMillisecond.offset(
-          interaction.extremeDates.min,
+          interaction.zoom.extremeDates.min,
           interaction.stepDelta
         )
       ),
-    [
-      interaction.stepDelta,
-      interaction.extremeDates,
-      interaction.yScale,
-    ]
+    [interaction.stepDelta, interaction.zoom]
   );
 
   const zones = React.useMemo(() => {
-    const { stepDelta, extremeDates } = interaction;
+    const {
+      stepDelta,
+      zoom: { extremeDates },
+    } = interaction;
 
     const missingTime = extremeDates.min.getTime() % stepDelta;
 
@@ -85,7 +84,7 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
 
   useShortcut({
     key: 'E',
-    callback: interaction.resetZoom,
+    callback: interaction.zoom.resetZoom,
     event: 'keydown',
     ignore: !activeWindow || activeWindow.id !== tableId,
   });
@@ -95,23 +94,18 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
       onWheel: (e) => {
         if (activeWindow?.id !== tableId) return;
 
-        interaction.moveBy(interaction.yScale.convert(e.deltaY / 4));
+        interaction.drag.moveBy(
+          interaction.zoom.yScale.convert(e.deltaY / 4)
+        );
       },
       onCtrlWheel: (e) => {
         if (!activeWindow || activeWindow.id !== tableId) return;
 
-        if (e.deltaY >= 0) interaction.zoomOut();
-        else interaction.zoomIn();
+        if (e.deltaY >= 0) interaction.zoom.zoomOut();
+        else interaction.zoom.zoomIn();
       },
     },
-    [
-      activeWindow?.id,
-      tableId,
-      interaction.moveBy,
-      interaction.zoomOut,
-      interaction.zoomIn,
-      interaction.yScale,
-    ]
+    [activeWindow?.id, tableId, interaction.drag, interaction.zoom]
   );
 
   const getRowColor = React.useCallback(
@@ -130,12 +124,15 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
   );
 
   return (
-    <Timescale.Container
-      cursor={interaction.isDragging ? 'grabbing' : 'grab'}
-      onMouseDown={interaction.startDrag}
-      ref={(value) => (container.current = value)}
-    >
-      <svg width="100%" height="100%">
+    <Timescale.Container ref={(value) => (container.current = value)}>
+      <svg
+        width="100%"
+        height="100%"
+        onMouseDown={interaction.drag.startDrag}
+        style={{
+          cursor: interaction.drag.isDragging ? 'grabbing' : 'grab',
+        }}
+      >
         <defs>
           <linearGradient
             id={`gradient_${table.id}`}
@@ -175,8 +172,8 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
               <line
                 x1="0"
                 x2="100%"
-                y1={interaction.yScale(zone.start)}
-                y2={interaction.yScale(zone.start)}
+                y1={interaction.zoom.yScale(zone.start)}
+                y2={interaction.zoom.yScale(zone.start)}
                 strokeWidth="1"
                 stroke="#000000"
               />
@@ -184,7 +181,7 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
                 width="100%"
                 height={zoneHeight}
                 x="0"
-                y={interaction.yScale(zone.start)}
+                y={interaction.zoom.yScale(zone.start)}
                 style={{
                   fill: getRowColor(zone.start),
                 }}
@@ -193,10 +190,10 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
               {zoneHeight > 12 && (
                 <text
                   fill="#000000"
-                  font-size="14"
-                  font-family="Franklin Gothic"
+                  fontSize="14"
+                  fontFamily="Franklin Gothic"
                   x="10"
-                  y={interaction.yScale(zone.start) + 14}
+                  y={interaction.zoom.yScale(zone.start) + 14}
                 >
                   {utcFormat('%m/%d/%Y %H:%M:%S')(zone.start)}
                 </text>
@@ -205,7 +202,7 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
           ))
         )}
 
-        <NowIndicator yScale={interaction.yScale} />
+        <NowIndicator yScale={interaction.zoom.yScale} />
       </svg>
 
       <TableObjectsLayer tableId={tableId} />
@@ -213,15 +210,13 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
   );
 };
 
-Timescale.Container = styled.div<{ cursor: 'grab' | 'grabbing' }>`
+Timescale.Container = styled.div`
   position: relative;
   width: 100%;
   height: 100%;
 
   background: #121212;
   color: #fff;
-
-  cursor: ${({ cursor }) => cursor};
 
   overflow: hidden;
 `;

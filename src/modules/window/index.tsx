@@ -4,6 +4,7 @@ import { useDrag } from '../../hooks/useDrag';
 import { IPoint } from '../../types/IPoint';
 import { PredictionTable } from '../prediction-table/model';
 import { Timescale } from '../timescale';
+import { TimescaleInteractionProvider } from '../timescale/context';
 import { useWindow } from '../workspace/hooks/useWindow';
 import { WindowState, WorkspaceWindow } from '../workspace/model';
 
@@ -178,7 +179,9 @@ export const Window = ({
       </Window.TitleBar>
 
       <Window.Content>
-        <Timescale tableId={table.id} />
+        <TimescaleInteractionProvider tableId={table.id}>
+          <Timescale tableId={table.id} />
+        </TimescaleInteractionProvider>
       </Window.Content>
     </Window.Container>
   );

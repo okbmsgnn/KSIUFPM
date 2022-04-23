@@ -10,7 +10,6 @@ import {
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRange } from '../../../types/IRange';
-import { DSTify } from '../../../utils/date';
 import { getTableById } from '../../prediction-table/predictionTableReducer';
 import { resetZoom, zoomIn, zoomOut } from '../timescaleActions';
 import { getMsDelta } from '../timescaleReducer';

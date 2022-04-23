@@ -14,16 +14,26 @@ type DragData = {
   container: React.MutableRefObject<HTMLElement | null>;
   location: IPoint;
   setLocation: (location: IPoint) => void;
+  isDragging: boolean;
 };
 
 export const useDrag = (props: DragProps = {}, deps?: any[]) => {
+  const [pivot, setPivot] = React.useState<IPoint | null>(null);
+  const [localProps, setLocalProps] = React.useState(props);
+
+  React.useEffect(() => {
+    if (!pivot) return;
+
+    setLocalProps(props);
+  }, [!!pivot, ...(deps ?? [])]);
+
   const {
     initialLocation,
     onDragEnd,
     onDragStart,
     onDragStarted,
     onDragTick,
-  } = React.useMemo(() => props, deps);
+  } = localProps;
 
   const [location, setLocation] = React.useState<IPoint>(
     initialLocation ?? {
@@ -32,7 +42,6 @@ export const useDrag = (props: DragProps = {}, deps?: any[]) => {
     }
   );
   const wasDragged = React.useRef(false);
-  const [pivot, setPivot] = React.useState<IPoint | null>(null);
   const handle = React.useRef<HTMLElement | null>(null);
   const container = React.useRef<HTMLElement | null>(null);
 
@@ -118,7 +127,8 @@ export const useDrag = (props: DragProps = {}, deps?: any[]) => {
       container,
       location,
       setLocation,
+      isDragging: !!pivot,
     }),
-    [handle, container, location]
+    [handle, container, location, pivot]
   );
 };

@@ -1,20 +1,23 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { getTableById } from '../../prediction-table/predictionTableReducer';
+import { useDrag } from '../hooks/useDrag';
+import { useZoom } from '../hooks/useZoom';
 import {
   getExtremeDates,
   getTimescaleSize,
 } from '../timescaleReducer';
-import { useDrag } from './useDrag';
-import { useZoom } from './useZoom';
+import TimescaleInteractionContext from './TimescaleInteractionContext';
 
-interface TimescaleInteractionProps {
+interface TimescaleInteractionProviderProps {
+  children: React.ReactNode;
   tableId: string;
 }
 
-export const useTimescaleInteraction = ({
+export const TimescaleInteractionProvider = ({
   tableId,
-}: TimescaleInteractionProps) => {
+  children,
+}: TimescaleInteractionProviderProps) => {
   const timescaleSize = useSelector((state) =>
     getTimescaleSize(state, { tableId })
   );
@@ -53,12 +56,18 @@ export const useTimescaleInteraction = ({
     zoom,
   });
 
-  return React.useMemo(
+  const context = React.useMemo(
     () => ({
-      ...drag,
-      ...zoom,
+      drag,
+      zoom,
       stepDelta,
     }),
     [drag, zoom, stepDelta]
+  );
+
+  return (
+    <TimescaleInteractionContext.Provider value={context}>
+      {children}
+    </TimescaleInteractionContext.Provider>
   );
 };
