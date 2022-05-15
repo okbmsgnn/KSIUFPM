@@ -2,7 +2,6 @@ import { utcMillisecond } from 'd3-time';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRange } from '../../../types/IRange';
-import { DSTify } from '../../../utils/date';
 import { getTableById } from '../../prediction-table/predictionTableReducer';
 import { setExtremeDates } from '../../timescale/timescaleActions';
 import { useZoom } from './useZoom';
@@ -22,8 +21,6 @@ export const useDrag = ({ tableId, zoom }: DragProps) => {
 
   const calculateNewExtremeDates = React.useCallback(
     (newExtremeMin: Date) => {
-      if (!zoom.extremeDates) return null;
-
       const newExtremeMax = utcMillisecond.offset(
         newExtremeMin,
         zoom.msDelta
@@ -54,14 +51,13 @@ export const useDrag = ({ tableId, zoom }: DragProps) => {
 
       return dates;
     },
-    [zoom, table]
+    [zoom.msDelta, table]
   );
 
   const startDrag = React.useCallback(
-    (e: any) => {
+    (e: React.MouseEvent) => {
       console.log(
-        e.nativeEvent.offsetY,
-        DSTify(zoom.yScale.invert(e.nativeEvent.offsetY), true)
+        zoom.yScale.invert(e.nativeEvent.offsetY).toISOString()
       );
       setIsDragging(true);
     },
@@ -85,12 +81,13 @@ export const useDrag = ({ tableId, zoom }: DragProps) => {
         })
       );
     },
-    [zoom.extremeDates, tableId, calculateNewExtremeDates]
+    [zoom.yScale, tableId, calculateNewExtremeDates]
   );
 
   const drag = React.useCallback(
     (e: MouseEvent) => {
       const newExtremeMin = zoom.yScale.invert(-e.movementY);
+
       const dates = calculateNewExtremeDates(newExtremeMin);
       if (!dates) return;
 
@@ -101,7 +98,7 @@ export const useDrag = ({ tableId, zoom }: DragProps) => {
         })
       );
     },
-    [tableId, calculateNewExtremeDates]
+    [zoom.yScale, calculateNewExtremeDates]
   );
 
   const endDrag = React.useCallback((e: MouseEvent) => {

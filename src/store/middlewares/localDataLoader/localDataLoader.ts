@@ -57,7 +57,10 @@ export const localDataLoaderMiddleware: Middleware =
 
       store.dispatch({
         type: `${action.type}_SUCCESS`,
-        payload: deserializedData,
+        payload:
+          deserializedData.length <= 1
+            ? deserializedData[0]
+            : deserializedData,
         previousAction: action,
       });
     };

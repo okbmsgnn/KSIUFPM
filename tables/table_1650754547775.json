@@ -1,0 +1,20 @@
+{
+  "name": "Without DST",
+  "localName": "",
+  "description": "",
+  "tags": "",
+  "startDate": "2021-11-12T00:00:00.000Z",
+  "endDate": "2022-02-24T00:00:00.000Z",
+  "colorPalette": [
+    "#aa60d2",
+    "#97ea66",
+    "#86aff7",
+    "#9a86f7"
+  ],
+  "step": {
+    "type": "days",
+    "value": 1
+  },
+  "createdAt": "2022-04-23T22:55:47.775Z",
+  "id": "28744c6b-20f0-4c88-b171-86d8a1b8d252"
+}

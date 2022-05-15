@@ -55,7 +55,14 @@ export const ContextMenu = ({
             ref={(value) => (contextRef.current = value)}
           >
             {items.map((item) => (
-              <div onClick={item.action}>{item.displayName}</div>
+              <div
+                onClick={() => {
+                  setIsOpen(false);
+                  item.action();
+                }}
+              >
+                {item.displayName}
+              </div>
             ))}
           </ContextMenu.Container>
         </Portal>

@@ -219,6 +219,10 @@ Timescale.Container = styled.div`
   color: #fff;
 
   overflow: hidden;
+
+  &:active rect {
+    pointer-events: none;
+  }
 `;
 
 Timescale.Step = styled.div`

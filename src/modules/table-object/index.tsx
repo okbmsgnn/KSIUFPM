@@ -6,9 +6,10 @@ import {
 } from '../../components/context-menu';
 import { useDrag } from '../../hooks/useDrag';
 import { useTimescaleInteraction } from '../timescale/context';
+import { ITableObject } from './model';
 
 interface TableObjectProps {
-  tableObject: { location: { x: number; y: Date } };
+  tableObject: ITableObject;
   contextMenu: ContextMenuItem[];
   primaryColor: string;
 }
@@ -23,8 +24,8 @@ export const TableObject = ({
   } = useTimescaleInteraction();
 
   const [staticLocation, setStaticLocation] = React.useState({
-    x: tableObject.location.x,
-    y: tableObject.location.y,
+    x: tableObject.x,
+    y: tableObject.date,
   });
 
   const { container, handle } = useDrag(
@@ -49,16 +50,25 @@ export const TableObject = ({
     [yScale]
   );
 
+  const location = React.useMemo(
+    () => ({
+      x: staticLocation.x,
+      y: yScale(staticLocation.y),
+    }),
+    [staticLocation, yScale]
+  );
+
   return (
     <ContextMenu items={contextMenu}>
       {(ref, open) => (
         <TableObject.Container
-          id="ebal"
           ref={(value) => (ref.current = container.current = value)}
           onMouseDown={(e) => e.button === 2 && open()}
           style={{
-            top: yScale(staticLocation.y) + 'px',
-            left: staticLocation.x + 'px',
+            top: location.y + 'px',
+            left: location.x + 'px',
+            width: 50 * tableObject.sizeMultiplier,
+            height: 50 * tableObject.sizeMultiplier,
           }}
         >
           <TableObject.Handle
@@ -90,9 +100,7 @@ TableObject.Handle = styled.div<{ color: string }>`
 TableObject.Container = styled.div`
   position: absolute;
 
-  width: 50px;
-  height: 50px;
-  background: black;
+  background: #000;
 
   :hover ${TableObject.Handle} {
     opacity: 0.5;

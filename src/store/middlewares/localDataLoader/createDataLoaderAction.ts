@@ -8,10 +8,12 @@ type DLPayload = {
 
 export const createDataLoaderAction = <T = string>(
   type: T,
-  payload: DLPayload
+  payload: DLPayload,
+  metaPayload?: any
 ) => {
   const meta = {
     type: LOAD_LOCAL_DATA,
+    payload: metaPayload,
   };
 
   return {

@@ -1,39 +1,82 @@
-import { utcHour } from 'd3-time';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { Portal } from '../../components/portal';
 import { getTableById } from '../prediction-table/predictionTableReducer';
 import { TableObject } from '../table-object';
+import { IStrictEvent, ITableObject } from '../table-object/model';
+import { getStrictEvents } from '../table-object/tableObjectReducer';
 
 interface TableObjectsLayerProps {
   tableId: string;
 }
 
+interface TableObjectEditMode {
+  sizeMultiplier: { objectId: string } | null;
+}
+
 const TableObjectsLayer = ({ tableId }: TableObjectsLayerProps) => {
+  const [editMode, setEditMode] = React.useState<TableObjectEditMode>(
+    { sizeMultiplier: null }
+  );
   const table = useSelector((state) =>
     getTableById(state, { tableId })
   );
 
-  const objects = React.useMemo(() => {
-    const pivot = new Date('2022-03-28T03:00:00Z');
+  const startEditing = React.useCallback(
+    (objectId: string, prop: keyof TableObjectEditMode) => {
+      switch (prop) {
+        case 'sizeMultiplier': {
+          setEditMode((prev) => ({
+            ...prev,
+            sizeMultiplier: { objectId },
+          }));
+          break;
+        }
+        default:
+          break;
+      }
+    },
+    []
+  );
 
-    const rand = (n: number) => Math.random() * n;
-    const randY = (n: number) => utcHour.offset(pivot, rand(n));
-    const date = Date.now();
-    return Array.from({ length: 200 }, (_, idx) => ({
-      location: { x: rand(1500), y: randY(1000) },
-      id: `${date}-${idx + 1}`,
-    }));
-  }, []);
+  const stopEditing = React.useCallback(
+    (prop: keyof TableObjectEditMode) => {
+      setEditMode((prev) => ({ ...prev, [prop]: null }));
+    },
+    []
+  );
+
+  const loadedStrictEvents = useSelector((state) =>
+    getStrictEvents(state, { tableId })
+  );
+
+  const [strictEvents, setStrictEvents] = React.useState<
+    IStrictEvent[]
+  >(loadedStrictEvents);
+
+  React.useEffect(() => {
+    setStrictEvents(loadedStrictEvents);
+  }, [loadedStrictEvents]);
 
   return (
     <TableObjectsLayer.Container>
-      {objects.map((o) => (
+      {strictEvents.map((o) => (
         <TableObject
           contextMenu={[
             {
-              action: () => alert(o.id),
+              action: () => alert(o.date.toISOString()),
               displayName: 'Show Details',
+            },
+            {
+              action: () => alert(o.text),
+              displayName: 'Show Text',
+            },
+            {
+              action: () => {
+                startEditing(o.id, 'sizeMultiplier');
+              },
+              displayName: 'Set Size Miltiplier',
             },
           ]}
           primaryColor={table.colorPalette[2]}
@@ -41,6 +84,54 @@ const TableObjectsLayer = ({ tableId }: TableObjectsLayerProps) => {
           key={o.id}
         />
       ))}
+
+      {editMode.sizeMultiplier && (
+        <Portal>
+          <div
+            style={{ background: '#fff', border: '2px solid black' }}
+          >
+            <div style={{ marginBottom: '10px' }}>
+              Change Size Multiplier
+            </div>
+
+            <input
+              id="size-multiplier-input"
+              type="range"
+              step="1"
+              min="50"
+              max="200"
+            />
+            <br />
+            <button
+              onClick={() => {
+                const input = document.querySelector(
+                  '#size-multiplier-input'
+                ) as HTMLInputElement;
+
+                const value = parseInt(input.value) / 100;
+
+                if (Number.isNaN(value)) return;
+
+                setStrictEvents((prev) =>
+                  prev.map((o) =>
+                    o.id === editMode.sizeMultiplier?.objectId
+                      ? { ...o, sizeMultiplier: value }
+                      : o
+                  )
+                );
+
+                stopEditing('sizeMultiplier');
+              }}
+            >
+              Submit
+            </button>
+
+            <button onClick={() => stopEditing('sizeMultiplier')}>
+              Cancel
+            </button>
+          </div>
+        </Portal>
+      )}
     </TableObjectsLayer.Container>
   );
 };
