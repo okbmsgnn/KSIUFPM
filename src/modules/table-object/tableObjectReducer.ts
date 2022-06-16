@@ -2,7 +2,10 @@ import { Reducer } from 'redux';
 import * as R from 'ramda';
 import { createSelector } from 'reselect';
 import { TableObjectAction, TableObjectState } from './model';
-import { LOAD_STRICT_EVENTS } from './tableObjectActions';
+import {
+  LOAD_STRICT_EVENTS,
+  SAVE_STRICT_EVENTS,
+} from './tableObjectActions';
 
 export const STATE_KEY = 'tableObject';
 
@@ -21,6 +24,15 @@ export const tableObjectReducer: Reducer<
         action.previousAction.meta.payload.tableId;
 
       return R.assocPath([tableId, 'strictEvents'], events, state);
+    }
+    case `${SAVE_STRICT_EVENTS}_SUCCESS`: {
+      //@ts-ignore
+      const { meta, payload } = action.previousAction;
+      return R.assocPath(
+        [meta.payload.tableId, 'strictEvents'],
+        payload.data,
+        state
+      );
     }
     default:
       return state;

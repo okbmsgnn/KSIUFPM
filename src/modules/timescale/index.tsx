@@ -14,6 +14,8 @@ import { useWheelEvent } from '../../hooks/useWheelEvent';
 import TableObjectsLayer from '../table-objects-layer';
 import NowIndicator from './components/NowIndicator';
 import { useTimescaleInteraction } from './context';
+import { createStrictEvent } from '../table-object/tableObjectActions';
+import { v4 as uuid } from 'uuid';
 
 interface TimescaleProps {
   tableId: string;
@@ -129,6 +131,25 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
         width="100%"
         height="100%"
         onMouseDown={interaction.drag.startDrag}
+        onDoubleClick={(e) =>
+          dispatch(
+            createStrictEvent({
+              event: {
+                date: interaction.zoom.yScale.invert(
+                  e.nativeEvent.offsetY
+                ),
+                id: uuid(),
+                incomingChances: {},
+                outcomingChances: {},
+                props: {},
+                sizeMultiplier: 1,
+                text: 'Hello there!',
+                x: e.nativeEvent.offsetX,
+              },
+              tableId,
+            })
+          )
+        }
         style={{
           cursor: interaction.drag.isDragging ? 'grabbing' : 'grab',
         }}

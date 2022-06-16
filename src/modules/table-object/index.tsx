@@ -1,4 +1,5 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import {
   ContextMenuItem,
@@ -6,19 +7,48 @@ import {
 } from '../../components/context-menu';
 import { useDrag } from '../../hooks/useDrag';
 import { useTimescaleInteraction } from '../timescale/context';
-import { ITableObject } from './model';
+import { IStrictEvent, ITableObject } from './model';
+import { updateStrictEvent } from './tableObjectActions';
 
 interface TableObjectProps {
   tableObject: ITableObject;
   contextMenu: ContextMenuItem[];
   primaryColor: string;
+  tableId: string;
 }
+
+const tableObjectStyle: Record<string, string> = {
+  strictEvent: `
+    background: #A1A1A1;
+    border: 2px solid #565656;
+
+    :after {
+      content: '';
+      width: 84%;
+      height: 84%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #b0f4ff55;
+      z-index: 2;
+      transition: 0.4s;
+    }
+
+    :hover:after {
+      background: #c1f5ffff;
+      transition: 0.4s;
+    }
+  `,
+};
 
 export const TableObject = ({
   contextMenu,
   tableObject,
   primaryColor,
+  tableId,
 }: TableObjectProps) => {
+  const dispatch = useDispatch();
   const {
     zoom: { yScale },
   } = useTimescaleInteraction();
@@ -45,9 +75,17 @@ export const TableObject = ({
           x: point.x,
           y: yScale.invert(point.y),
         });
+
+        const event = {
+          ...tableObject,
+          x: point.x,
+          date: yScale.invert(point.y),
+        } as IStrictEvent;
+
+        dispatch(updateStrictEvent({ event, tableId }));
       },
     },
-    [yScale]
+    [yScale, tableId]
   );
 
   const location = React.useMemo(
@@ -70,6 +108,7 @@ export const TableObject = ({
             width: 50 * tableObject.sizeMultiplier,
             height: 50 * tableObject.sizeMultiplier,
           }}
+          styles={tableObjectStyle.strictEvent}
         >
           <TableObject.Handle
             color={primaryColor}
@@ -95,15 +134,17 @@ TableObject.Handle = styled.div<{ color: string }>`
   background: ${({ color }) => color};
   border: 1px solid #000;
   cursor: move;
+
+  z-index: 3;
 `;
 
-TableObject.Container = styled.div`
+TableObject.Container = styled.div<{ styles: string }>`
   position: absolute;
-
-  background: #000;
 
   :hover ${TableObject.Handle} {
     opacity: 0.5;
     transition: opacity 0.3s;
   }
+
+  ${({ styles }) => styles};
 `;

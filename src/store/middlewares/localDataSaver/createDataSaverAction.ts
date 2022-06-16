@@ -7,10 +7,12 @@ type DSPayload<P> = {
 
 export const createDataSaverAction = <T = string, P = any>(
   type: T,
-  payload: DSPayload<P>
+  payload: DSPayload<P>,
+  metaPayload?: any
 ) => {
   const meta = {
     type: SAVE_LOCAL_DATA,
+    payload: metaPayload,
   };
 
   return {

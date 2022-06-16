@@ -1,10 +1,11 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Portal } from '../../components/portal';
 import { getTableById } from '../prediction-table/predictionTableReducer';
 import { TableObject } from '../table-object';
-import { IStrictEvent, ITableObject } from '../table-object/model';
+import { IStrictEvent } from '../table-object/model';
+import { removeStrictEvent } from '../table-object/tableObjectActions';
 import { getStrictEvents } from '../table-object/tableObjectReducer';
 
 interface TableObjectsLayerProps {
@@ -16,6 +17,7 @@ interface TableObjectEditMode {
 }
 
 const TableObjectsLayer = ({ tableId }: TableObjectsLayerProps) => {
+  const dispatch = useDispatch();
   const [editMode, setEditMode] = React.useState<TableObjectEditMode>(
     { sizeMultiplier: null }
   );
@@ -69,19 +71,23 @@ const TableObjectsLayer = ({ tableId }: TableObjectsLayerProps) => {
               displayName: 'Show Details',
             },
             {
-              action: () => alert(o.text),
-              displayName: 'Show Text',
-            },
-            {
               action: () => {
                 startEditing(o.id, 'sizeMultiplier');
               },
               displayName: 'Set Size Miltiplier',
             },
+            {
+              action: () =>
+                dispatch(
+                  removeStrictEvent({ tableId, eventId: o.id })
+                ),
+              displayName: 'Delete',
+            },
           ]}
           primaryColor={table.colorPalette[2]}
           tableObject={o}
           key={o.id}
+          tableId={tableId}
         />
       ))}
 

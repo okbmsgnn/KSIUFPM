@@ -1,6 +1,14 @@
-import { all, put, takeLatest } from 'redux-saga/effects';
+import { all, put, select, takeLatest } from 'redux-saga/effects';
 import { OPEN_WINDOW } from '../workspace/workspaceActions';
-import { loadStrictTableObjects } from './tableObjectActions';
+import { IStrictEvent } from './model';
+import {
+  CREATE_STRICT_EVENT,
+  loadStrictTableObjects,
+  REMOVE_STRICT_EVENT,
+  saveStrictEvents,
+  UPDATE_STRICT_EVENT,
+} from './tableObjectActions';
+import { getStrictEvents } from './tableObjectReducer';
 
 function* loadTableObjectsSaga(
   action: any
@@ -10,8 +18,53 @@ function* loadTableObjectsSaga(
   yield put(loadStrictTableObjects(tableId));
 }
 
+function* updateStrictEventSaga(
+  action: any
+): Generator<any, any, any> {
+  const { tableId, event } = action.payload;
+
+  const events = yield select(getStrictEvents, { tableId });
+
+  const eventsToInsert = events.map((e: IStrictEvent) =>
+    e.id === event.id ? event : e
+  );
+
+  yield put(saveStrictEvents({ tableId, events: eventsToInsert }));
+}
+
+function* removeStrictEventSaga(
+  action: any
+): Generator<any, any, any> {
+  const { tableId, eventId } = action.payload;
+
+  const events = yield select(getStrictEvents, { tableId });
+
+  const eventsToInsert = events.filter(
+    (e: IStrictEvent) => e.id !== eventId
+  );
+
+  yield put(saveStrictEvents({ tableId, events: eventsToInsert }));
+}
+
+function* createStrictEventSaga(
+  action: any
+): Generator<any, any, any> {
+  const { tableId, event } = action.payload;
+
+  const events = yield select(getStrictEvents, { tableId });
+
+  const eventsToInsert: IStrictEvent[] = [...events, event];
+
+  yield put(saveStrictEvents({ tableId, events: eventsToInsert }));
+}
+
 function* tableObjectSaga(): Generator<any, any, any> {
-  yield all([takeLatest(OPEN_WINDOW, loadTableObjectsSaga)]);
+  yield all([
+    takeLatest(OPEN_WINDOW, loadTableObjectsSaga),
+    takeLatest(UPDATE_STRICT_EVENT, updateStrictEventSaga),
+    takeLatest(REMOVE_STRICT_EVENT, removeStrictEventSaga),
+    takeLatest(CREATE_STRICT_EVENT, createStrictEventSaga),
+  ]);
 }
 
 export default tableObjectSaga;
