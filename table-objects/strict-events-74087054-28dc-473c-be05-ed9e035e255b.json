@@ -1,9 +1,14 @@
 [
   {
     "id": "strict-event-21",
-    "date": "2022-04-26T07:58:32.269Z",
-    "x": 324,
+    "date": "2022-06-19T20:29:48.221Z",
+    "x": 0.5308510638297872,
     "sizeMultiplier": 1,
+    "size": {
+      "width": 50,
+      "height": 50
+    },
+    "tableId": "74087054-28dc-473c-be05-ed9e035e255b",
     "text": "lorem srakul da blyad sit amet",
     "incomingChances": {
       "strict-event-23": 45,
@@ -18,53 +23,93 @@
     }
   },
   {
-    "date": "2022-06-22T03:38:28.016Z",
-    "id": "9792a754-01ec-4b1b-b7c6-10393eed4a30",
+    "date": "2022-06-19T18:57:59.188Z",
+    "id": "96759f98-7d41-4055-87ea-4527cc003071",
     "incomingChances": {},
     "outcomingChances": {},
     "props": {},
+    "size": {
+      "width": 50,
+      "height": 50
+    },
     "sizeMultiplier": 1,
-    "text": "Hello there!",
-    "x": 997
+    "text": "",
+    "x": 0.28617021276595744,
+    "tableId": "74087054-28dc-473c-be05-ed9e035e255b"
   },
   {
-    "date": "2022-06-22T08:13:55.115Z",
-    "id": "569774e0-0610-43ac-b201-52fbd37c6d77",
+    "date": "2022-06-19T19:43:53.704Z",
+    "id": "2cac0a4e-34b1-44ad-afd2-a7624cd3d0e5",
     "incomingChances": {},
     "outcomingChances": {},
     "props": {},
+    "size": {
+      "width": 50,
+      "height": 50
+    },
     "sizeMultiplier": 1,
-    "text": "Hello there!",
-    "x": 846
+    "text": "",
+    "x": 0.4867021276595745,
+    "tableId": "74087054-28dc-473c-be05-ed9e035e255b"
   },
   {
-    "date": "2022-06-22T05:56:11.566Z",
-    "id": "168123cb-502a-465c-965b-5121e586c8a7",
+    "date": "2022-06-19T18:10:17.234Z",
+    "id": "0dd3f8cc-6e8d-4c98-a969-1994b99628b3",
     "incomingChances": {},
     "outcomingChances": {},
     "props": {},
+    "size": {
+      "width": 50,
+      "height": 50
+    },
     "sizeMultiplier": 1,
-    "text": "Hello there!",
-    "x": 926
+    "text": "",
+    "x": 0.38351063829787235,
+    "tableId": "74087054-28dc-473c-be05-ed9e035e255b"
   },
   {
-    "date": "2022-06-22T02:06:38.984Z",
-    "id": "6a22b472-e686-4f45-9252-a2a8c78b0ed2",
+    "date": "2022-06-19T19:43:53.704Z",
+    "id": "33051575-4286-4041-98be-58549e9da75f",
     "incomingChances": {},
     "outcomingChances": {},
     "props": {},
+    "size": {
+      "width": 50,
+      "height": 50
+    },
     "sizeMultiplier": 1,
-    "text": "Hello there!",
-    "x": 697
+    "text": "",
+    "x": 0.24202127659574468,
+    "tableId": "74087054-28dc-473c-be05-ed9e035e255b"
   },
   {
-    "date": "2022-06-22T03:38:28.016Z",
-    "id": "90be88b7-54ec-4cdd-bf5d-04a4122c995a",
+    "date": "2022-06-19T17:26:10.155Z",
+    "id": "c67bc37b-8f07-4adf-a438-c2db39711791",
     "incomingChances": {},
     "outcomingChances": {},
     "props": {},
+    "size": {
+      "width": 50,
+      "height": 50
+    },
     "sizeMultiplier": 1,
-    "text": "Hello there!",
-    "x": 768
+    "text": "",
+    "x": 0.43670212765957445,
+    "tableId": "74087054-28dc-473c-be05-ed9e035e255b"
+  },
+  {
+    "date": "2022-06-19T18:12:04.671Z",
+    "id": "0d7f6107-13ad-4c0a-ae03-d295bf6ac7de",
+    "incomingChances": {},
+    "outcomingChances": {},
+    "props": {},
+    "size": {
+      "width": 50,
+      "height": 50
+    },
+    "sizeMultiplier": 1,
+    "text": "",
+    "x": 0.3292553191489362,
+    "tableId": "74087054-28dc-473c-be05-ed9e035e255b"
   }
 ]

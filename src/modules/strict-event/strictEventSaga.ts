@@ -7,10 +7,10 @@ import {
   REMOVE_STRICT_EVENT,
   saveStrictEvents,
   UPDATE_STRICT_EVENT,
-} from './tableObjectActions';
-import { getStrictEvents } from './tableObjectReducer';
+} from './strictEventActions';
+import { getStrictEvents } from './strictEventReducer';
 
-function* loadTableObjectsSaga(
+function* loadStrictEventsSaga(
   action: any
 ): Generator<any, any, any> {
   const tableId = action.payload.id;
@@ -58,13 +58,11 @@ function* createStrictEventSaga(
   yield put(saveStrictEvents({ tableId, events: eventsToInsert }));
 }
 
-function* tableObjectSaga(): Generator<any, any, any> {
+export function* strictEventSaga(): Generator<any, any, any> {
   yield all([
-    takeLatest(OPEN_WINDOW, loadTableObjectsSaga),
+    takeLatest(OPEN_WINDOW, loadStrictEventsSaga),
     takeLatest(UPDATE_STRICT_EVENT, updateStrictEventSaga),
     takeLatest(REMOVE_STRICT_EVENT, removeStrictEventSaga),
     takeLatest(CREATE_STRICT_EVENT, createStrictEventSaga),
   ]);
 }
-
-export default tableObjectSaga;

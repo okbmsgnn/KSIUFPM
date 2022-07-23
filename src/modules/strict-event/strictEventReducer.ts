@@ -1,19 +1,19 @@
 import { Reducer } from 'redux';
 import * as R from 'ramda';
 import { createSelector } from 'reselect';
-import { TableObjectAction, TableObjectState } from './model';
+import { StrictEventAction, StrictEventState } from './model';
 import {
   LOAD_STRICT_EVENTS,
   SAVE_STRICT_EVENTS,
-} from './tableObjectActions';
+} from './strictEventActions';
 
 export const STATE_KEY = 'tableObject';
 
-const initialState: TableObjectState = {};
+const initialState: StrictEventState = {};
 
-export const tableObjectReducer: Reducer<
-  TableObjectState,
-  TableObjectAction
+export const strictEventReducer: Reducer<
+  StrictEventState,
+  StrictEventAction
 > = (state = initialState, action) => {
   switch (action.type) {
     case `${LOAD_STRICT_EVENTS}_SUCCESS`: {
@@ -39,7 +39,7 @@ export const tableObjectReducer: Reducer<
   }
 };
 
-export const getState = (state: any): TableObjectState =>
+export const getState = (state: any): StrictEventState =>
   state[STATE_KEY];
 
 export const getStrictEvents = createSelector(

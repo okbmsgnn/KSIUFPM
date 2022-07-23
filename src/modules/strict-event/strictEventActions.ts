@@ -3,7 +3,7 @@ import { createDataSaverAction } from '../../store/middlewares/localDataSaver';
 import { IStrictEvent } from './model';
 import { strictEventDeserializer } from './utils/strictEventDeserializer';
 
-export const namespace = 'TABLE_OBJECT';
+export const namespace = 'STRICT_EVENT';
 
 export const LOAD_STRICT_EVENTS =
   `${namespace}/LOAD_STRICT_EVENTS` as const;
@@ -54,7 +54,7 @@ export const saveStrictEvents = (payload: {
     { tableId: payload.tableId }
   );
 
-export const tableObjectActions = {
+export const strictEventActions = {
   createStrictEvent,
   removeStrictEvent,
   updateStrictEvent,

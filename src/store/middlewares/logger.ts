@@ -1,4 +1,10 @@
 import { Middleware } from 'redux';
+import {
+  SET_EXTREME_DATES,
+  SET_TIMESCALE_SIZE,
+} from '../../modules/timescale/timescaleActions';
+
+const IGNORE_LIST = [SET_TIMESCALE_SIZE, SET_EXTREME_DATES];
 
 export const loggerMiddleware: Middleware =
   (store) => (next) => (action) => {
@@ -10,6 +16,7 @@ export const loggerMiddleware: Middleware =
 
     try {
       result = next(action);
+      if (IGNORE_LIST.includes(action.type)) return result;
       if (result.error) error = result.error;
     } catch (e) {
       error = e as Error;

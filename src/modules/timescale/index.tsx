@@ -14,8 +14,7 @@ import { useWheelEvent } from '../../hooks/useWheelEvent';
 import TableObjectsLayer from '../table-objects-layer';
 import NowIndicator from './components/NowIndicator';
 import { useTimescaleInteraction } from './context';
-import { createStrictEvent } from '../table-object/tableObjectActions';
-import { v4 as uuid } from 'uuid';
+import { useStrictEvent } from '../strict-event/hooks/useStrictEvent';
 
 interface TimescaleProps {
   tableId: string;
@@ -125,31 +124,24 @@ export const Timescale = ({ tableId }: TimescaleProps) => {
     [table, interaction.stepDelta]
   );
 
+  const strictEvent = useStrictEvent({ tableId });
+
   return (
     <Timescale.Container ref={(value) => (container.current = value)}>
       <svg
         width="100%"
         height="100%"
         onMouseDown={interaction.drag.startDrag}
-        onDoubleClick={(e) =>
-          dispatch(
-            createStrictEvent({
-              event: {
-                date: interaction.zoom.yScale.invert(
-                  e.nativeEvent.offsetY
-                ),
-                id: uuid(),
-                incomingChances: {},
-                outcomingChances: {},
-                props: {},
-                sizeMultiplier: 1,
-                text: 'Hello there!',
-                x: e.nativeEvent.offsetX,
-              },
-              tableId,
-            })
-          )
-        }
+        onDoubleClick={(e) => {
+          if (!timescaleSize) return;
+
+          strictEvent.create({
+            date: interaction.zoom.yScale.invert(
+              e.nativeEvent.offsetY
+            ),
+            x: e.nativeEvent.offsetX / timescaleSize.width,
+          });
+        }}
         style={{
           cursor: interaction.drag.isDragging ? 'grabbing' : 'grab',
         }}

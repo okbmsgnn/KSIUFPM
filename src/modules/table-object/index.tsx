@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import {
   ContextMenuItem,
@@ -7,56 +7,44 @@ import {
 } from '../../components/context-menu';
 import { useDrag } from '../../hooks/useDrag';
 import { useTimescaleInteraction } from '../timescale/context';
-import { IStrictEvent, ITableObject } from './model';
-import { updateStrictEvent } from './tableObjectActions';
+import { getTimescaleSize } from '../timescale/timescaleReducer';
+import { ITableObject } from './model';
 
 interface TableObjectProps {
-  tableObject: ITableObject;
-  contextMenu: ContextMenuItem[];
+  contextMenu?: ContextMenuItem[];
   primaryColor: string;
-  tableId: string;
+  tableObject: ITableObject;
+  onLocationChange: (location: { x: number; date: Date }) => void;
+  children: React.ReactNode;
 }
-
-const tableObjectStyle: Record<string, string> = {
-  strictEvent: `
-    background: #A1A1A1;
-    border: 2px solid #565656;
-
-    :after {
-      content: '';
-      width: 84%;
-      height: 84%;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #b0f4ff55;
-      z-index: 2;
-      transition: 0.4s;
-    }
-
-    :hover:after {
-      background: #c1f5ffff;
-      transition: 0.4s;
-    }
-  `,
-};
 
 export const TableObject = ({
   contextMenu,
   tableObject,
   primaryColor,
-  tableId,
+  onLocationChange,
+  children,
 }: TableObjectProps) => {
-  const dispatch = useDispatch();
+  const windowSize = useSelector((state) =>
+    getTimescaleSize(state, { tableId: tableObject.tableId })
+  );
+
   const {
     zoom: { yScale },
   } = useTimescaleInteraction();
 
   const [staticLocation, setStaticLocation] = React.useState({
-    x: tableObject.x,
+    x: windowSize.width * tableObject.x,
     y: tableObject.date,
   });
+
+  const location = React.useMemo(
+    () => ({
+      x: staticLocation.x,
+      y: yScale(staticLocation.y),
+    }),
+    [staticLocation, yScale]
+  );
 
   const { container, handle } = useDrag(
     {
@@ -76,28 +64,24 @@ export const TableObject = ({
           y: yScale.invert(point.y),
         });
 
-        const event = {
-          ...tableObject,
-          x: point.x,
+        onLocationChange?.call(null, {
+          x: point.x / windowSize.width,
           date: yScale.invert(point.y),
-        } as IStrictEvent;
-
-        dispatch(updateStrictEvent({ event, tableId }));
+        });
       },
     },
-    [yScale, tableId]
+    [yScale, windowSize, onLocationChange]
   );
 
-  const location = React.useMemo(
-    () => ({
-      x: staticLocation.x,
-      y: yScale(staticLocation.y),
-    }),
-    [staticLocation, yScale]
-  );
+  React.useEffect(() => {
+    setStaticLocation((prev) => ({
+      ...prev,
+      x: windowSize.width * tableObject.x,
+    }));
+  }, [windowSize]);
 
   return (
-    <ContextMenu items={contextMenu}>
+    <ContextMenu items={contextMenu ?? []}>
       {(ref, open) => (
         <TableObject.Container
           ref={(value) => (ref.current = container.current = value)}
@@ -105,11 +89,14 @@ export const TableObject = ({
           style={{
             top: location.y + 'px',
             left: location.x + 'px',
-            width: 50 * tableObject.sizeMultiplier,
-            height: 50 * tableObject.sizeMultiplier,
+            width:
+              tableObject.size.width * tableObject.sizeMultiplier,
+            height:
+              tableObject.size.height * tableObject.sizeMultiplier,
           }}
-          styles={tableObjectStyle.strictEvent}
         >
+          {children}
+
           <TableObject.Handle
             color={primaryColor}
             ref={(value) => (handle.current = value)}
@@ -138,13 +125,17 @@ TableObject.Handle = styled.div<{ color: string }>`
   z-index: 3;
 `;
 
-TableObject.Container = styled.div<{ styles: string }>`
+TableObject.Container = styled.div`
   position: absolute;
+
+  > :first-child {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+  }
 
   :hover ${TableObject.Handle} {
     opacity: 0.5;
     transition: opacity 0.3s;
   }
-
-  ${({ styles }) => styles};
 `;

@@ -25,8 +25,10 @@ export const ContextMenu = ({
   const contextRef = React.useRef<HTMLElement | null>(null);
 
   const onOpen = React.useCallback(() => {
+    if (items.length === 0) return;
+
     setIsOpen(true);
-  }, []);
+  }, [items]);
 
   const menuLocation = React.useMemo(() => {
     if (location) return location;
@@ -54,12 +56,13 @@ export const ContextMenu = ({
             location={menuLocation}
             ref={(value) => (contextRef.current = value)}
           >
-            {items.map((item) => (
+            {items.map((item, idx) => (
               <div
                 onClick={() => {
                   setIsOpen(false);
                   item.action();
                 }}
+                key={item.displayName + idx}
               >
                 {item.displayName}
               </div>
